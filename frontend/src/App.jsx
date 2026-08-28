@@ -24,7 +24,6 @@ function App() {
         <Route path="/content/:id" element={<ContentDetailPage />} />
         
         {/* Placeholder Public Routes from Navbar */}
-        <Route path="/following" element={<div className="page-container"><h1 className="page-title">Following</h1></div>} />
         <Route path="/creators" element={<div className="page-container"><h1 className="page-title">Creators</h1></div>} />
         <Route path="/campaigns" element={<div className="page-container"><h1 className="page-title">Campaigns</h1></div>} />
 

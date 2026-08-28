@@ -71,4 +71,6 @@ export const api = {
 export const socialApi = {
   followUser: (userId) => api.post(`/social/follow/${userId}`),
   unfollowUser: (userId) => api.delete(`/social/unfollow/${userId}`),
+  getFollowers: (userId) => api.get(`/social/followers/${userId}`),
+  getFollowing: (userId) => api.get(`/social/following/${userId}`),
 };

@@ -2,6 +2,8 @@
 @import './styles/like-button.css';
 @import './styles/comment-section.css';
 @import './styles/follow-button.css';
+@import './styles/user-card.css';
+@import './styles/modal.css';
 
 :root {
   /* Colors */

@@ -42,10 +42,7 @@ export default function Navbar() {
             <NavIcon circle={{cx: "12", cy: "12", r: "10"}} polygon="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
             <span className="nav-text">Explore</span>
           </NavLink>
-          <NavLink to="/following" onClick={closeMenu} className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')} aria-label="Following">
-            <NavIcon paths={["M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", "M22 21v-2a4 4 0 0 0-3-3.87", "M16 3.13a4 4 0 0 1 0 7.75"]} circle={{cx: "9", cy: "7", r: "4"}} />
-            <span className="nav-text">Following</span>
-          </NavLink>
+
           
           <NavLink to="/creators" onClick={closeMenu} className={({ isActive }) => (isActive ? 'nav-link active desktop-only' : 'nav-link desktop-only')} aria-label="Creators">
             <span className="nav-text">Creators</span>
