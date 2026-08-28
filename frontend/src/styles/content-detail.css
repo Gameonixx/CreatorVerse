@@ -1,0 +1,142 @@
+.content-detail-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  width: 100%;
+}
+
+.content-detail-nav {
+  margin-bottom: 1.5rem;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text-primary);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.back-link:hover {
+  color: var(--color-text-secondary);
+}
+
+.back-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.content-detail-container {
+  padding: 0; /* Overrides .card default padding */
+}
+
+.content-detail-media-wrapper {
+  width: 100%;
+  background-color: #000;
+  border-bottom: var(--border-width) solid var(--color-border);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  border-radius: 10px 10px 0 0;
+  overflow: hidden;
+}
+
+.content-detail-media-image,
+.content-detail-media-video {
+  width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  display: block;
+}
+
+.content-detail-media-fallback {
+  padding: 4rem 2rem;
+  text-align: center;
+  color: #fff;
+  font-family: var(--font-body);
+}
+
+.content-detail-info {
+  padding: 2rem;
+}
+
+.content-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.content-detail-creator {
+  font-weight: 700;
+  color: var(--color-text-primary);
+  text-decoration: none;
+  font-size: 1.1rem;
+}
+
+.content-detail-creator:hover {
+  text-decoration: underline;
+}
+
+.content-detail-date {
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+}
+
+.content-detail-title {
+  font-size: 2rem;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  line-height: 1.25;
+  word-wrap: break-word;
+}
+
+.content-detail-caption {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  white-space: pre-wrap;
+}
+
+.content-detail-actions {
+  margin-top: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.content-detail-loading,
+.content-detail-error {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.content-detail-error h2 {
+  margin-bottom: 1rem;
+}
+
+.content-detail-error p {
+  margin-bottom: 2rem;
+  color: var(--color-text-secondary);
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+  .content-detail-page {
+    padding: 1.5rem 1rem;
+  }
+  
+  .content-detail-info {
+    padding: 1.5rem;
+  }
+  
+  .content-detail-title {
+    font-size: 1.5rem;
+  }
+}

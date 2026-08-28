@@ -1,0 +1,166 @@
+/* Creator Profile Page Styles - Neo-Brutalist/Editorial Design */
+
+.creator-profile-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  padding-bottom: 6rem; /* Account for bottom navigation on mobile */
+  background-color: var(--color-background);
+  min-height: 100vh;
+}
+
+/* Header Component */
+.creator-profile-header {
+  border: 3px solid var(--color-border);
+  background-color: var(--color-surface);
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 4px 4px 0px var(--color-border);
+  text-align: center;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.creator-profile-header:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px var(--color-border);
+}
+
+.creator-name {
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  word-wrap: break-word;
+}
+
+.creator-niche {
+  display: inline-block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background-color: var(--color-accent);
+  color: var(--color-text);
+  padding: 0.25rem 0.75rem;
+  border: 2px solid var(--color-border);
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+}
+
+.creator-bio {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--color-text-light);
+  max-width: 600px;
+  margin: 0 auto 2rem auto;
+}
+
+.creator-stats {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  border-top: 2px solid var(--color-border);
+  padding-top: 1.5rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-value {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--color-text-light);
+  margin-top: 0.25rem;
+}
+
+/* Content Grid Component */
+.creator-content-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.creator-content-section-title {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-bottom: 3px solid var(--color-border);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.creator-content-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+.creator-load-more {
+  text-align: center;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* States */
+.creator-loading,
+.creator-error,
+.creator-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  border: 3px dashed var(--color-border);
+  border-radius: 8px;
+  background-color: var(--color-surface);
+  font-weight: 600;
+}
+
+.creator-error {
+  color: var(--color-error, #d32f2f);
+  border-style: solid;
+}
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+  .creator-content-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .creator-profile-page {
+    padding-top: 1rem;
+  }
+
+  .creator-profile-header {
+    padding: 1.5rem 1rem;
+  }
+
+  .creator-name {
+    font-size: 2rem;
+  }
+
+  .creator-bio {
+    font-size: 1rem;
+  }
+
+  .creator-stats {
+    gap: 1rem;
+  }
+}
