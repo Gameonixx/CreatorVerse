@@ -81,7 +81,7 @@ public class AuthService {
         String jwtToken = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
         String refreshToken = refreshTokenService.createRefreshToken(user);
 
-        return new AuthResponse(jwtToken, refreshToken);
+        return new AuthResponse(jwtToken, refreshToken, user.getId());
     }
     
     @Transactional
@@ -93,7 +93,7 @@ public class AuthService {
                     refreshTokenService.revokeToken(refreshToken);
                     String token = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
                     String newRefreshToken = refreshTokenService.createRefreshToken(user);
-                    return new AuthResponse(token, newRefreshToken);
+                    return new AuthResponse(token, newRefreshToken, user.getId());
                 })
                 .orElseThrow(() -> new com.creatorverse.common.exception.UnauthorizedException("Refresh token is not in database!"));
     }

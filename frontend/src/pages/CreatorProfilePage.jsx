@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import CreatorProfileHeader from '../components/creator/CreatorProfileHeader';
 import CreatorContentGrid from '../components/creator/CreatorContentGrid';
 
 export default function CreatorProfilePage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -75,6 +77,7 @@ export default function CreatorProfilePage() {
           profileData={profile} 
           displayName={displayName} 
           onFollowChange={handleFollowChange}
+          isOwnProfile={user?.id === parseInt(id, 10)}
         />
       )}
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import FollowButton from '../social/FollowButton';
 import UserListModal from '../social/UserListModal';
 
-export default function CreatorProfileHeader({ profileData, displayName, onFollowChange }) {
+export default function CreatorProfileHeader({ profileData, displayName, onFollowChange, isOwnProfile }) {
   const [modalState, setModalState] = useState({ isOpen: false, type: 'followers' });
 
   if (!profileData) return null;
@@ -51,11 +51,13 @@ export default function CreatorProfileHeader({ profileData, displayName, onFollo
         </div>
       </div>
 
-      <FollowButton 
-        userId={userId} 
-        isFollowed={isFollowedByCurrentUser} 
-        onFollowChange={onFollowChange} 
-      />
+      {!isOwnProfile && (
+        <FollowButton 
+          userId={userId} 
+          isFollowed={isFollowedByCurrentUser} 
+          onFollowChange={onFollowChange} 
+        />
+      )}
 
       <UserListModal 
         userId={userId} 

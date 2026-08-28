@@ -28,7 +28,11 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('token', response.accessToken);
         // Temporarily, we extract the username from credentials to set simple user obj
         // In the future, this would come from the JWT claims or a /me endpoint.
-        const userObj = { username: credentials.usernameOrEmail, role: 'USER' }; 
+        const userObj = { 
+          id: response.userId,
+          username: credentials.usernameOrEmail, 
+          role: 'USER' 
+        }; 
         setUser(userObj);
         localStorage.setItem('user', JSON.stringify(userObj));
       }
