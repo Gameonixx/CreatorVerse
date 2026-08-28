@@ -1,6 +1,7 @@
 @import './styles/creator-profile.css';
 @import './styles/like-button.css';
 @import './styles/comment-section.css';
+@import './styles/follow-button.css';
 
 :root {
   /* Colors */

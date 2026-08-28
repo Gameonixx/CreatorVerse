@@ -39,6 +39,17 @@ export default function CreatorProfilePage() {
     navigate('/feed');
   };
 
+  const handleFollowChange = (isFollowing) => {
+    setProfile((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        isFollowedByCurrentUser: isFollowing,
+        followerCount: Math.max(0, prev.followerCount + (isFollowing ? 1 : -1))
+      };
+    });
+  };
+
   return (
     <div className="creator-profile-page">
       <div style={{ marginBottom: '1rem' }}>
@@ -63,6 +74,7 @@ export default function CreatorProfilePage() {
         <CreatorProfileHeader 
           profileData={profile} 
           displayName={displayName} 
+          onFollowChange={handleFollowChange}
         />
       )}
 

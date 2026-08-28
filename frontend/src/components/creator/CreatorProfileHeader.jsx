@@ -1,9 +1,10 @@
 import React from 'react';
+import FollowButton from '../social/FollowButton';
 
-export default function CreatorProfileHeader({ profileData, displayName }) {
+export default function CreatorProfileHeader({ profileData, displayName, onFollowChange }) {
   if (!profileData) return null;
 
-  const { niche, bio, followerCount, engagementRate } = profileData;
+  const { userId, niche, bio, followerCount, engagementRate, isFollowedByCurrentUser } = profileData;
   const nameToDisplay = displayName || 'Creator Profile';
 
   return (
@@ -32,6 +33,12 @@ export default function CreatorProfileHeader({ profileData, displayName }) {
           <span className="stat-label">Engagement</span>
         </div>
       </div>
+
+      <FollowButton 
+        userId={userId} 
+        isFollowed={isFollowedByCurrentUser} 
+        onFollowChange={onFollowChange} 
+      />
     </header>
   );
 }

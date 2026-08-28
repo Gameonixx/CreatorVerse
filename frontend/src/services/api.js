@@ -67,3 +67,8 @@ export const api = {
 
   delete: (endpoint, options) => request(endpoint, { method: 'DELETE', ...options }),
 };
+
+export const socialApi = {
+  followUser: (userId) => api.post(`/social/follow/${userId}`),
+  unfollowUser: (userId) => api.delete(`/social/unfollow/${userId}`),
+};
