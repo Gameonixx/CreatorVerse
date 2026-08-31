@@ -53,6 +53,11 @@ public class FollowService {
 
         follow = followRepository.save(follow);
         
+        following.setFollowerCount(following.getFollowerCount() + 1);
+        follower.setFollowingCount(follower.getFollowingCount() + 1);
+        userRepository.save(following);
+        userRepository.save(follower);
+
         creatorProfileRepository.findByUserId(following.getId()).ifPresent(profile -> {
             profile.setFollowerCount(profile.getFollowerCount() + 1);
             creatorProfileRepository.save(profile);
@@ -73,6 +78,15 @@ public class FollowService {
 
         followRepository.delete(follow);
         
+        if (following.getFollowerCount() > 0) {
+            following.setFollowerCount(following.getFollowerCount() - 1);
+        }
+        if (follower.getFollowingCount() > 0) {
+            follower.setFollowingCount(follower.getFollowingCount() - 1);
+        }
+        userRepository.save(following);
+        userRepository.save(follower);
+
         creatorProfileRepository.findByUserId(following.getId()).ifPresent(profile -> {
             if (profile.getFollowerCount() > 0) {
                 profile.setFollowerCount(profile.getFollowerCount() - 1);
