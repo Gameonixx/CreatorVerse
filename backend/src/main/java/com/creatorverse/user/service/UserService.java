@@ -43,6 +43,13 @@ public class UserService {
     }
     
     @Transactional(readOnly = true)
+    public UserResponse getUserByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
+        return mapToResponse(user);
+    }
+    
+    @Transactional(readOnly = true)
     public List<UserResponse> getAllUsers() {
         return userRepository.findAll().stream().map(this::mapToResponse).collect(Collectors.toList());
     }
@@ -75,6 +82,10 @@ public class UserService {
         response.setEmail(user.getEmail());
         response.setDisplayName(user.getDisplayName());
         response.setRole(user.getRole());
+        response.setBio(user.getBio());
+        response.setFollowerCount(user.getFollowerCount());
+        response.setFollowingCount(user.getFollowingCount());
+        response.setAvatarUrl(user.getAvatarUrl());
         response.setCreatedAt(user.getCreatedAt());
         response.setUpdatedAt(user.getUpdatedAt());
         return response;

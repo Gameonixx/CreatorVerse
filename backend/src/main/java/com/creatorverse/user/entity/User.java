@@ -29,6 +29,18 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(columnDefinition = "TEXT")
+    private String bio;
+
+    @Column(nullable = false)
+    private Integer followerCount = 0;
+
+    @Column(nullable = false)
+    private Integer followingCount = 0;
+
+    @Column(length = 1024)
+    private String avatarUrl;
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -65,4 +77,16 @@ public class User {
     
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
+
+    public Integer getFollowerCount() { return followerCount; }
+    public void setFollowerCount(Integer followerCount) { this.followerCount = followerCount; }
+
+    public Integer getFollowingCount() { return followingCount; }
+    public void setFollowingCount(Integer followingCount) { this.followingCount = followingCount; }
+
+    public String getAvatarUrl() { return avatarUrl; }
+    public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
 }

@@ -37,6 +37,17 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<UserResponse> getCurrentUser() {
+        String currentUsername = SecurityUtils.getCurrentUsername();
+        if (currentUsername == null) {
+            throw new ForbiddenException("Not authenticated");
+        }
+        UserResponse response = userService.getUserByUsername(currentUsername);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserResponse>> getAllUsers() {

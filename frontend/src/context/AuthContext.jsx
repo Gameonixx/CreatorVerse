@@ -8,16 +8,29 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
 
-  // In a real app, you would probably hit a /me endpoint to validate the token 
-  // and fetch the user profile on mount. For now, since CreatorVerse Phase 4 
-  // backend doesn't necessarily have a standard /me returning full profile yet,
-  // we will try to decode it or store the user object locally.
+  // Hydrate user from /me endpoint, falling back to local storage
   useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    if (token && savedUser) {
-      setUser(JSON.parse(savedUser));
+    const fetchMe = async () => {
+      try {
+        const response = await api.get('/users/me');
+        setUser(response);
+        localStorage.setItem('user', JSON.stringify(response));
+      } catch (err) {
+        console.error("Failed to fetch user profile", err);
+        const savedUser = localStorage.getItem('user');
+        if (savedUser) {
+          setUser(JSON.parse(savedUser));
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (token) {
+      fetchMe();
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, [token]);
 
   const login = async (credentials) => {

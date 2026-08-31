@@ -9,6 +9,10 @@ public class UserResponse {
     private String email;
     private String displayName;
     private Role role;
+    private String bio;
+    private Integer followerCount;
+    private Integer followingCount;
+    private String avatarUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -32,4 +36,16 @@ public class UserResponse {
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
+
+    public Integer getFollowerCount() { return followerCount; }
+    public void setFollowerCount(Integer followerCount) { this.followerCount = followerCount; }
+
+    public Integer getFollowingCount() { return followingCount; }
+    public void setFollowingCount(Integer followingCount) { this.followingCount = followingCount; }
+
+    public String getAvatarUrl() { return avatarUrl; }
+    public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
 }
