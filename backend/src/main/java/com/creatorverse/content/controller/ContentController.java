@@ -25,7 +25,7 @@ public class ContentController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('CREATOR') or hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ContentResponse> createContent(
             @RequestPart("metadata") @Valid ContentCreateRequest request,
             @RequestPart("file") MultipartFile file,
@@ -41,7 +41,7 @@ public class ContentController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('CREATOR') or hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ContentResponse> updateContent(
             @PathVariable Long id, 
             @Valid @RequestBody ContentUpdateRequest request) {
@@ -49,13 +49,13 @@ public class ContentController {
     }
 
     @PostMapping("/{id}/publish")
-    @PreAuthorize("hasRole('CREATOR') or hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ContentResponse> publishContent(@PathVariable Long id) {
         return ResponseEntity.ok(contentService.publishContent(id));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('CREATOR') or hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> deleteContent(@PathVariable Long id) {
         contentService.deleteContent(id);
         return ResponseEntity.noContent().build();
@@ -77,19 +77,19 @@ public class ContentController {
     }
 
     @GetMapping("/me")
-    @PreAuthorize("hasRole('CREATOR') or hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<ContentSummaryResponse>> getMyContent() {
         return ResponseEntity.ok(contentService.getMyContent());
     }
 
     @GetMapping("/me/drafts")
-    @PreAuthorize("hasRole('CREATOR') or hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<ContentSummaryResponse>> getMyDrafts() {
         return ResponseEntity.ok(contentService.getMyDrafts());
     }
 
     @GetMapping("/me/published")
-    @PreAuthorize("hasRole('CREATOR') or hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<ContentSummaryResponse>> getMyPublished() {
         return ResponseEntity.ok(contentService.getMyPublished());
     }

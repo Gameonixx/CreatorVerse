@@ -266,13 +266,8 @@ public class ContentServiceImpl implements ContentService {
         if (username == null) {
             throw new UnauthorizedException("User not authenticated");
         }
-        User user = userRepository.findByUsername(username)
+        return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UnauthorizedException("User not found"));
-        
-        if (user.getRole() != com.creatorverse.user.entity.Role.CREATOR && user.getRole() != com.creatorverse.user.entity.Role.ADMIN) {
-            throw new ForbiddenException("Only creators can manage content");
-        }
-        return user;
     }
 
     private Content getMyContentEntity(Long contentId) {
