@@ -14,26 +14,39 @@ export default function CreatorProfilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [displayName, setDisplayName] = useState('');
+  const [hasCreatorProfile, setHasCreatorProfile] = useState(false);
+  const [upgrading, setUpgrading] = useState(false);
+
+  const fetchProfileData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // 1. Fetch standard public user info
+      const userData = await api.get(`/users/public/${id}`);
+      
+      // 2. Attempt to fetch creator profile info
+      let creatorData = null;
+      try {
+        creatorData = await api.get(`/creators/profile/public/${id}`);
+        setHasCreatorProfile(true);
+      } catch (err) {
+        // 404 is normal if they are just a standard user
+        setHasCreatorProfile(false);
+      }
+      
+      // Merge data
+      setProfile({ ...userData, ...creatorData });
+    } catch (err) {
+      setError('Failed to load user profile');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        // Using centralized API service to fetch public profile
-        const data = await api.get(`/creators/profile/public/${id}`);
-        setProfile(data);
-      } catch (err) {
-        // If they don't have a profile, we might get a 404. We can still let the ContentGrid show their content.
-        // We'll store the error to show a message in the header section, but won't crash the page.
-        setError(err.message || 'Failed to load profile details');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if (id) {
-      fetchProfile();
+      fetchProfileData();
     }
   }, [id]);
 
@@ -47,17 +60,69 @@ export default function CreatorProfilePage() {
       return {
         ...prev,
         isFollowedByCurrentUser: isFollowing,
-        followerCount: Math.max(0, prev.followerCount + (isFollowing ? 1 : -1))
+        followerCount: Math.max(0, (prev.followerCount || 0) + (isFollowing ? 1 : -1))
       };
     });
   };
 
+  const handleUpgrade = async () => {
+    try {
+      setUpgrading(true);
+      await api.post(`/creators/profile?userId=${id}`, {
+        niche: 'Digital Creator',
+        bio: 'Hello, I am a creator.'
+      });
+      await fetchProfileData();
+    } catch (err) {
+      console.error('Failed to upgrade account', err);
+      alert('Failed to upgrade account: ' + (err.message || 'Unknown error'));
+    } finally {
+      setUpgrading(false);
+    }
+  };
+
+  const handleDowngrade = async () => {
+    if (!window.confirm("Are you sure you want to switch to a Personal Account? Your Creator Profile metadata will be permanently deleted. Your content will remain intact.")) return;
+    try {
+      setUpgrading(true);
+      await api.delete(`/creators/profile/${id}`);
+      await fetchProfileData();
+    } catch (err) {
+      console.error('Failed to switch to personal account', err);
+      alert('Failed to switch to personal account: ' + (err.message || 'Unknown error'));
+    } finally {
+      setUpgrading(false);
+    }
+  };
+
+  const isOwnProfile = user?.id === parseInt(id, 10);
+
   return (
     <div className="creator-profile-page">
-      <div style={{ marginBottom: '1rem' }}>
-        <button className="btn" onClick={handleBack} style={{ background: 'transparent', padding: '0', border: 'none', textDecoration: 'underline', cursor: 'pointer' }}>
+      <div className="creator-profile-actions">
+        <button className="btn back-btn" onClick={handleBack} style={{ background: 'transparent', padding: '0', border: 'none', textDecoration: 'underline', cursor: 'pointer' }}>
           &larr; Back to Explore
         </button>
+        <div className="creator-action-buttons">
+          {isOwnProfile && !hasCreatorProfile && !loading && !error && (
+            <button 
+              className="btn btn-primary action-btn" 
+              onClick={handleUpgrade}
+              disabled={upgrading}
+            >
+              {upgrading ? 'Upgrading...' : 'Switch to Professional Account'}
+            </button>
+          )}
+          {isOwnProfile && hasCreatorProfile && !loading && !error && (
+            <button 
+              className="btn action-btn" 
+              onClick={handleDowngrade}
+              disabled={upgrading}
+            >
+              {upgrading ? 'Switching...' : 'Switch to Personal Account'}
+            </button>
+          )}
+        </div>
       </div>
 
       {loading && (
@@ -75,9 +140,9 @@ export default function CreatorProfilePage() {
       {!loading && !error && profile && (
         <CreatorProfileHeader 
           profileData={profile} 
-          displayName={displayName} 
+          displayName={displayName || profile.displayName || profile.username} 
           onFollowChange={handleFollowChange}
-          isOwnProfile={user?.id === parseInt(id, 10)}
+          isOwnProfile={isOwnProfile}
         />
       )}
 

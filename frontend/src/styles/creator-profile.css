@@ -9,6 +9,21 @@
   min-height: 100vh;
 }
 
+/* Action Buttons Header */
+.creator-profile-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.creator-action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
 /* Header Component */
 .creator-profile-header {
   border: 3px solid var(--color-border);
@@ -144,6 +159,29 @@
 }
 
 @media (max-width: 480px) {
+  .creator-profile-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  
+  .creator-profile-actions .back-btn {
+    align-self: flex-start;
+  }
+
+  .creator-action-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .creator-action-buttons .action-btn {
+    width: 100%;
+    font-size: 0.85rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    white-space: nowrap;
+  }
+
   .creator-profile-page {
     padding-top: 1rem;
   }

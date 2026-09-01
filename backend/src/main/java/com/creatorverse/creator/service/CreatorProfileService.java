@@ -39,11 +39,7 @@ public class CreatorProfileService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
-        // Note: For Phase 1, we allow profile creation without enforcing ROLE_CREATOR here yet,
-        // but we could enforce it if desired. We will keep it simple.
-        if (user.getRole() != Role.CREATOR && user.getRole() != Role.ADMIN) {
-             throw new IllegalArgumentException("User must have CREATOR role to create a creator profile");
-        }
+        // Removed role check allowing standard users to create creator profiles
 
         CreatorProfile profile = new CreatorProfile();
         profile.setUser(user);
@@ -83,6 +79,13 @@ public class CreatorProfileService {
 
         profile = creatorProfileRepository.save(profile);
         return mapToResponse(profile, false); // Generally editing own profile, so false is safe
+    }
+
+    @Transactional
+    public void deleteProfile(Long userId) {
+        CreatorProfile profile = creatorProfileRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("CreatorProfile not found for user: " + userId));
+        creatorProfileRepository.delete(profile);
     }
 
     private CreatorProfileResponse mapToResponse(CreatorProfile profile, boolean isFollowedByCurrentUser) {

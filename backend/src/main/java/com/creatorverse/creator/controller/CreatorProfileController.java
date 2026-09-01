@@ -27,7 +27,7 @@ public class CreatorProfileController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('CREATOR') or hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CreatorProfileResponse> createProfile(@RequestParam Long userId, @Valid @RequestBody CreatorProfileCreateRequest request) {
         verifyOwnershipOrAdmin(userId);
         CreatorProfileResponse response = creatorProfileService.createProfile(userId, request);
@@ -49,11 +49,19 @@ public class CreatorProfileController {
     }
 
     @PutMapping("/{userId}")
-    @PreAuthorize("hasRole('CREATOR') or hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CreatorProfileResponse> updateProfile(@PathVariable Long userId, @Valid @RequestBody CreatorProfileUpdateRequest request) {
         verifyOwnershipOrAdmin(userId);
         CreatorProfileResponse response = creatorProfileService.updateProfile(userId, request);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{userId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> deleteProfile(@PathVariable Long userId) {
+        verifyOwnershipOrAdmin(userId);
+        creatorProfileService.deleteProfile(userId);
+        return ResponseEntity.noContent().build();
     }
 
     private void verifyOwnershipOrAdmin(Long id) {

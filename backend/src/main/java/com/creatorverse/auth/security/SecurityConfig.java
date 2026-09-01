@@ -36,7 +36,7 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(req -> req
                 .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/refresh").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/health", "/api/content/feed", "/api/content/*", "/api/creators/profile/public/*", "/api/content/creator/*", "/api/social/content/*/comments").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/health", "/api/users/public/*", "/api/content/feed", "/api/content/*", "/api/creators/profile/public/*", "/api/content/creator/*", "/api/social/content/*/comments").permitAll()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

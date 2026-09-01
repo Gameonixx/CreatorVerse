@@ -37,6 +37,13 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/public/{id}")
+    public ResponseEntity<UserResponse> getPublicUser(@PathVariable Long id) {
+        UserResponse response = userService.getUser(id);
+        response.setEmail(null); // Explicitly remove sensitive data for public endpoint
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserResponse> getCurrentUser() {
