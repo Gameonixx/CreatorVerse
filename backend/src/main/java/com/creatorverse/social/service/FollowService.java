@@ -14,22 +14,17 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.creatorverse.creator.repository.CreatorProfileRepository;
-import com.creatorverse.creator.entity.CreatorProfile;
+
 
 @Service
 public class FollowService {
 
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
-    private final CreatorProfileRepository creatorProfileRepository;
-
     public FollowService(FollowRepository followRepository, 
-                         UserRepository userRepository,
-                         CreatorProfileRepository creatorProfileRepository) {
+                         UserRepository userRepository) {
         this.followRepository = followRepository;
         this.userRepository = userRepository;
-        this.creatorProfileRepository = creatorProfileRepository;
     }
 
     @Transactional
@@ -58,11 +53,7 @@ public class FollowService {
         userRepository.save(following);
         userRepository.save(follower);
 
-        creatorProfileRepository.findByUserId(following.getId()).ifPresent(profile -> {
-            profile.setFollowerCount(profile.getFollowerCount() + 1);
-            creatorProfileRepository.save(profile);
-        });
-        
+
         return mapToResponse(follow);
     }
 
@@ -86,13 +77,6 @@ public class FollowService {
         }
         userRepository.save(following);
         userRepository.save(follower);
-
-        creatorProfileRepository.findByUserId(following.getId()).ifPresent(profile -> {
-            if (profile.getFollowerCount() > 0) {
-                profile.setFollowerCount(profile.getFollowerCount() - 1);
-                creatorProfileRepository.save(profile);
-            }
-        });
     }
 
     @Transactional(readOnly = true)

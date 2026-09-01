@@ -44,8 +44,6 @@ public class CreatorProfileService {
         CreatorProfile profile = new CreatorProfile();
         profile.setUser(user);
         profile.setNiche(request.getNiche());
-        profile.setBio(request.getBio());
-        profile.setFollowerCount(0); // Default
         profile.setEngagementRate(0.0); // Default
 
         profile = creatorProfileRepository.save(profile);
@@ -75,7 +73,6 @@ public class CreatorProfileService {
                 .orElseThrow(() -> new ResourceNotFoundException("CreatorProfile not found for user: " + userId));
 
         profile.setNiche(request.getNiche());
-        profile.setBio(request.getBio());
 
         profile = creatorProfileRepository.save(profile);
         return mapToResponse(profile, false); // Generally editing own profile, so false is safe
@@ -93,8 +90,6 @@ public class CreatorProfileService {
         response.setId(profile.getId());
         response.setUserId(profile.getUser().getId());
         response.setNiche(profile.getNiche());
-        response.setBio(profile.getBio());
-        response.setFollowerCount(profile.getFollowerCount());
         response.setEngagementRate(profile.getEngagementRate());
         response.setCreatedAt(profile.getCreatedAt());
         response.setUpdatedAt(profile.getUpdatedAt());

@@ -62,6 +62,9 @@ public class UserService {
         if (request.getDisplayName() != null) {
             user.setDisplayName(request.getDisplayName());
         }
+        if (request.getBio() != null) {
+            user.setBio(request.getBio());
+        }
 
         user = userRepository.save(user);
         return mapToResponse(user);

@@ -20,10 +20,7 @@ public class CreatorProfile {
 
     private String niche;
     
-    @Column(columnDefinition = "TEXT")
-    private String bio;
 
-    private Integer followerCount;
     private Double engagementRate;
 
     @CreationTimestamp
@@ -44,11 +41,7 @@ public class CreatorProfile {
     public String getNiche() { return niche; }
     public void setNiche(String niche) { this.niche = niche; }
 
-    public String getBio() { return bio; }
-    public void setBio(String bio) { this.bio = bio; }
 
-    public Integer getFollowerCount() { return followerCount; }
-    public void setFollowerCount(Integer followerCount) { this.followerCount = followerCount; }
 
     public Double getEngagementRate() { return engagementRate; }
     public void setEngagementRate(Double engagementRate) { this.engagementRate = engagementRate; }

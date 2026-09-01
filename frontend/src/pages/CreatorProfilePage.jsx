@@ -69,8 +69,7 @@ export default function CreatorProfilePage() {
     try {
       setUpgrading(true);
       await api.post(`/creators/profile?userId=${id}`, {
-        niche: 'Digital Creator',
-        bio: 'Hello, I am a creator.'
+        niche: 'Digital Creator'
       });
       await fetchProfileData();
     } catch (err) {
