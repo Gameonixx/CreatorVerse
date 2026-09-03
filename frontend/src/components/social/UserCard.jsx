@@ -24,7 +24,7 @@ export default function UserCard({ user }) {
 
   if (isCreator) {
     return (
-      <Link to={`/creator/${id}`} className="user-card clickable">
+      <Link to={`/user/${id}`} className="user-card clickable">
         {content}
       </Link>
     );

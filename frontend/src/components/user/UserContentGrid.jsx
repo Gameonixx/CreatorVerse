@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { api } from '../../services/api';
 import ContentCard from '../content/ContentCard';
 
-export default function CreatorContentGrid({ creatorId, onDisplayNameDiscovered }) {
+export default function UserContentGrid({ userId, onDisplayNameDiscovered }) {
   const [content, setContent] = useState([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -19,7 +19,7 @@ export default function CreatorContentGrid({ creatorId, onDisplayNameDiscovered 
       }
       setError(null);
 
-      const response = await api.get(`/content/creator/${creatorId}?page=${pageNumber}&size=10`);
+      const response = await api.get(`/content/user/${userId}?page=${pageNumber}&size=10`);
       
       const newContent = response.content || [];
       
@@ -45,10 +45,11 @@ export default function CreatorContentGrid({ creatorId, onDisplayNameDiscovered 
   };
 
   useEffect(() => {
-    if (creatorId) {
-      fetchCreatorContent(0, true);
-    }
-  }, [creatorId]);
+    setContent([]);
+    setPage(0);
+    setHasMore(true);
+    fetchCreatorContent(0, true);
+  }, [userId]);
 
   const handleLoadMore = () => {
     if (!loadingMore && hasMore) {

@@ -52,9 +52,9 @@ public class CreatorProfileServiceTest {
         normalUser.setId(3L);
 
         profile = new CreatorProfile();
-        profile.setId(10L);
         profile.setUser(creatorUser);
-        profile.setFollowerCount(100);
+        profile.setNiche("Test Niche");
+        // FollowerCount is now on User
     }
 
     @Test

@@ -89,7 +89,7 @@ export default function Navbar() {
                 <div className="menu-group">
                   <Link to="/upload" className="menu-item" onClick={closeMenu}>Upload</Link>
                   <Link to="/my-content" className="menu-item" onClick={closeMenu}>My Content</Link>
-                  <Link to={`/creator/${user.id}`} className="menu-item" onClick={closeMenu}>Profile</Link>
+                  <Link to={`/user/${user.id}`} className="menu-item" onClick={closeMenu}>Profile</Link>
                 </div>
                 <div className="menu-group">
                   <button className="menu-item text-left" style={{ width: '100%', background: 'none', border: 'none', padding: '1rem', cursor: 'pointer', fontWeight: 600, fontFamily: 'var(--font-body)', fontSize: '1rem' }} onClick={handleLogout}>Log Out</button>

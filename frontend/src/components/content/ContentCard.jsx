@@ -58,7 +58,7 @@ export default function ContentCard({ content }) {
   return (
     <article className="content-card">
       <div className="content-card-header">
-        <Link to={`/creator/${creatorId}`} className="content-card-creator">
+        <Link to={`/user/${creatorId}`} className="content-card-creator">
           {creatorDisplayName || 'Unknown Creator'}
         </Link>
         {publishDate && <span className="content-card-date">{publishDate}</span>}

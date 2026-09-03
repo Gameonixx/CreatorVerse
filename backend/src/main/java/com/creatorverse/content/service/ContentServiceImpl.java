@@ -198,9 +198,9 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public org.springframework.data.domain.Page<ContentResponse> getPublicContentByCreatorId(Long creatorId, int page, int size) {
-        if (!userRepository.existsById(creatorId)) {
-            throw new ResourceNotFoundException("Creator not found");
+    public org.springframework.data.domain.Page<ContentResponse> getPublicContentByUserId(Long userId, int page, int size) {
+        if (!userRepository.existsById(userId)) {
+            throw new ResourceNotFoundException("User not found");
         }
 
         if (size > 50) {
@@ -217,7 +217,7 @@ public class ContentServiceImpl implements ContentService {
                 page, size, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "publishedAt"));
                 
         org.springframework.data.domain.Page<Content> contents = contentRepository.findByCreatorIdAndStatusAndVisibility(
-                creatorId,
+                userId,
                 ContentStatus.PUBLISHED, 
                 com.creatorverse.content.entity.enums.ContentVisibility.PUBLIC, 
                 pageable);

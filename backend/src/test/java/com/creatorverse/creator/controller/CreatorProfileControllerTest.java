@@ -42,7 +42,6 @@ public class CreatorProfileControllerTest {
         CreatorProfileResponse mockResponse = new CreatorProfileResponse();
         mockResponse.setId(1L);
         mockResponse.setUserId(2L);
-        mockResponse.setBio("My bio");
         mockResponse.setNiche("Gaming");
 
         when(creatorProfileService.getProfileByUserId(2L)).thenReturn(mockResponse);
@@ -51,7 +50,6 @@ public class CreatorProfileControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.userId").value(2))
-                .andExpect(jsonPath("$.bio").value("My bio"))
                 .andExpect(jsonPath("$.niche").value("Gaming"));
     }
 

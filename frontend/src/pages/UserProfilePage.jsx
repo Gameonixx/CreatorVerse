@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import CreatorProfileHeader from '../components/creator/CreatorProfileHeader';
-import CreatorContentGrid from '../components/creator/CreatorContentGrid';
+import UserProfileHeader from '../components/user/UserProfileHeader';
+import UserContentGrid from '../components/user/UserContentGrid';
 
-export default function CreatorProfilePage() {
+export default function UserProfilePage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -137,7 +137,7 @@ export default function CreatorProfilePage() {
       )}
 
       {!loading && !error && profile && (
-        <CreatorProfileHeader 
+        <UserProfileHeader 
           profileData={profile} 
           displayName={displayName || profile.displayName || profile.username} 
           onFollowChange={handleFollowChange}
@@ -145,8 +145,8 @@ export default function CreatorProfilePage() {
         />
       )}
 
-      <CreatorContentGrid 
-        creatorId={id} 
+      <UserContentGrid 
+        userId={id} 
         onDisplayNameDiscovered={setDisplayName} 
       />
     </div>

@@ -9,8 +9,6 @@ import com.creatorverse.user.dto.UserResponse;
 import com.creatorverse.user.entity.Role;
 import com.creatorverse.user.entity.User;
 import com.creatorverse.user.repository.UserRepository;
-import com.creatorverse.creator.repository.CreatorProfileRepository;
-import com.creatorverse.creator.entity.CreatorProfile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -32,9 +30,6 @@ class FollowServiceTest {
 
     @Mock
     private UserRepository userRepository;
-    
-    @Mock
-    private CreatorProfileRepository creatorProfileRepository;
 
     @InjectMocks
     private FollowService followService;
@@ -52,6 +47,7 @@ class FollowServiceTest {
 
         following = new User("following", "following@test.com", "Following", Role.CREATOR);
         following.setId(2L);
+        following.setFollowerCount(0);
 
         follow = new Follow();
         follow.setId(10L);
@@ -63,9 +59,6 @@ class FollowServiceTest {
     void followUser_Success() {
         when(userRepository.findByUsername("follower")).thenReturn(Optional.of(follower));
         when(userRepository.findById(2L)).thenReturn(Optional.of(following));
-        CreatorProfile profile = new CreatorProfile();
-        profile.setFollowerCount(0);
-        when(creatorProfileRepository.findByUserId(2L)).thenReturn(Optional.of(profile));
         when(followRepository.save(any(Follow.class))).thenReturn(follow);
 
         FollowResponse response = followService.followUser("follower", 2L);
@@ -74,8 +67,7 @@ class FollowServiceTest {
         assertEquals(1L, response.getFollowerId());
         assertEquals(2L, response.getFollowingId());
         verify(followRepository).save(any(Follow.class));
-        verify(creatorProfileRepository).save(profile);
-        assertEquals(1, profile.getFollowerCount());
+        assertEquals(1, following.getFollowerCount());
     }
 
     @Test
@@ -107,34 +99,28 @@ class FollowServiceTest {
 
     @Test
     void unfollowUser_Success() {
+        following.setFollowerCount(1);
         when(userRepository.findByUsername("follower")).thenReturn(Optional.of(follower));
         when(userRepository.findById(2L)).thenReturn(Optional.of(following));
-        CreatorProfile profile = new CreatorProfile();
-        profile.setFollowerCount(5);
-        when(creatorProfileRepository.findByUserId(2L)).thenReturn(Optional.of(profile));
         when(followRepository.findByFollowerAndFollowing(follower, following)).thenReturn(Optional.of(follow));
 
         followService.unfollowUser("follower", 2L);
 
         verify(followRepository).delete(follow);
-        verify(creatorProfileRepository).save(profile);
-        assertEquals(4, profile.getFollowerCount());
+        assertEquals(0, following.getFollowerCount());
     }
 
     @Test
     void unfollowUser_FollowerCountNeverNegative() {
+        following.setFollowerCount(0); // Already 0
         when(userRepository.findByUsername("follower")).thenReturn(Optional.of(follower));
         when(userRepository.findById(2L)).thenReturn(Optional.of(following));
-        CreatorProfile profile = new CreatorProfile();
-        profile.setFollowerCount(0); // Already 0
-        when(creatorProfileRepository.findByUserId(2L)).thenReturn(Optional.of(profile));
         when(followRepository.findByFollowerAndFollowing(follower, following)).thenReturn(Optional.of(follow));
 
         followService.unfollowUser("follower", 2L);
 
         verify(followRepository).delete(follow);
-        // It shouldn't save if it was 0, based on our if condition, but even if it does, it shouldn't decrement
-        assertEquals(0, profile.getFollowerCount());
+        assertEquals(0, following.getFollowerCount());
     }
 
     @Test

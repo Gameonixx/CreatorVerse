@@ -76,7 +76,7 @@ class AuthControllerTest {
         request.setUsernameOrEmail("newuser");
         request.setPassword("password123");
 
-        AuthResponse response = new AuthResponse("access-token-123", "refresh-token-123");
+        AuthResponse response = new AuthResponse("access-token-123", "refresh-token-123", 1L);
 
         Mockito.when(authService.login(any())).thenReturn(response);
 

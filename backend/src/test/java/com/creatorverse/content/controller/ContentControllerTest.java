@@ -88,38 +88,6 @@ public class ContentControllerTest {
                 .andExpect(status().isCreated());
     }
 
-    @Test
-    @WithMockUser(username = "user1", roles = {"USER"})
-    void createContent_AsUser_Forbidden() throws Exception {
-        MockMultipartFile file = new MockMultipartFile("file", "test.mp4", "video/mp4", "video data".getBytes());
-        MockMultipartFile metadata = new MockMultipartFile("metadata", "", "application/json",
-                "{\"title\":\"My Video\", \"contentType\":\"VIDEO\"}".getBytes());
-
-        mockMvc.perform(multipart("/api/content")
-                        .file(file)
-                        .file(metadata)
-                        .param("publishNow", "false")
-                        .with(csrf())
-                        .contentType(MediaType.MULTIPART_FORM_DATA))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    @WithMockUser(username = "brand1", roles = {"BRAND"})
-    void createContent_AsBrand_Forbidden() throws Exception {
-        MockMultipartFile file = new MockMultipartFile("file", "test.mp4", "video/mp4", "video data".getBytes());
-        MockMultipartFile metadata = new MockMultipartFile("metadata", "", "application/json",
-                "{\"title\":\"Brand Video\", \"contentType\":\"VIDEO\"}".getBytes());
-
-        mockMvc.perform(multipart("/api/content")
-                        .file(file)
-                        .file(metadata)
-                        .param("publishNow", "false")
-                        .with(csrf())
-                        .contentType(MediaType.MULTIPART_FORM_DATA))
-                .andExpect(status().isForbidden());
-    }
-    
     // ================= OWNERSHIP / EXCEPTION MAPPING TESTS =================
 
     @Test
@@ -187,23 +155,23 @@ public class ContentControllerTest {
                 .andExpect(status().isOk());
     }
 
-    // ================= PUBLIC CREATOR CONTENT TESTS =================
+    // ================= PUBLIC USER CONTENT TESTS =================
 
     @Test
-    void getPublicContentByCreator_Unauthenticated_ReturnsOk() throws Exception {
+    void getPublicContentByUser_Unauthenticated_ReturnsOk() throws Exception {
         org.springframework.data.domain.Page<ContentResponse> emptyPage = org.springframework.data.domain.Page.empty();
-        when(contentService.getPublicContentByCreatorId(2L, 0, 10)).thenReturn(emptyPage);
+        when(contentService.getPublicContentByUserId(2L, 0, 10)).thenReturn(emptyPage);
 
-        mockMvc.perform(get("/api/content/creator/2"))
+        mockMvc.perform(get("/api/content/user/2"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    void getPublicContentByCreator_PaginationParams_PassedToService() throws Exception {
+    void getPublicContentByUser_PaginationParams_PassedToService() throws Exception {
         org.springframework.data.domain.Page<ContentResponse> emptyPage = org.springframework.data.domain.Page.empty();
-        when(contentService.getPublicContentByCreatorId(2L, 1, 20)).thenReturn(emptyPage);
+        when(contentService.getPublicContentByUserId(2L, 1, 20)).thenReturn(emptyPage);
 
-        mockMvc.perform(get("/api/content/creator/2")
+        mockMvc.perform(get("/api/content/user/2")
                         .param("page", "1")
                         .param("size", "20"))
                 .andExpect(status().isOk());

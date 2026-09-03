@@ -3,7 +3,7 @@ import FollowButton from '../social/FollowButton';
 import UserListModal from '../social/UserListModal';
 import { api } from '../../services/api';
 
-export default function CreatorProfileHeader({ profileData, displayName, onFollowChange, isOwnProfile }) {
+export default function UserProfileHeader({ profileData, displayName, onFollowChange, isOwnProfile }) {
   const [modalState, setModalState] = useState({ isOpen: false, type: 'followers' });
   const [isEditingBio, setIsEditingBio] = useState(false);
   const [editBioText, setEditBioText] = useState('');

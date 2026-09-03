@@ -6,7 +6,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import FeedPage from './pages/FeedPage';
-import CreatorProfilePage from './pages/CreatorProfilePage';
+import UserProfilePage from './pages/UserProfilePage';
 import ContentDetailPage from './pages/ContentDetailPage';
 import UploadPage from './pages/UploadPage';
 import MyContentPage from './pages/MyContentPage';
@@ -20,7 +20,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/feed" element={<FeedPage />} />
-        <Route path="/creator/:id" element={<CreatorProfilePage />} />
+        <Route path="/user/:id" element={<UserProfilePage />} />
         <Route path="/content/:id" element={<ContentDetailPage />} />
         
         {/* Placeholder Public Routes from Navbar */}

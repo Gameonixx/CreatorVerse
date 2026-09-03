@@ -124,7 +124,7 @@ export default function ContentDetailPage() {
 
         <div className="content-detail-info">
           <div className="content-detail-header">
-            <Link to={`/creator/${creatorId}`} className="content-detail-creator">
+            <Link to={`/user/${creatorId}`} className="content-detail-creator">
               {creatorDisplayName || 'Unknown Creator'}
             </Link>
             {publishDate && <span className="content-detail-date">{publishDate}</span>}

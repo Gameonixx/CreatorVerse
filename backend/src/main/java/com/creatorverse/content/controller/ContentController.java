@@ -68,12 +68,12 @@ public class ContentController {
         return ResponseEntity.ok(contentService.getPublicFeed(page, size));
     }
 
-    @GetMapping("/creator/{creatorId}")
-    public ResponseEntity<org.springframework.data.domain.Page<ContentResponse>> getPublicContentByCreator(
-            @PathVariable Long creatorId,
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<org.springframework.data.domain.Page<ContentResponse>> getPublicContentByUser(
+            @PathVariable Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(contentService.getPublicContentByCreatorId(creatorId, page, size));
+        return ResponseEntity.ok(contentService.getPublicContentByUserId(userId, page, size));
     }
 
     @GetMapping("/me")

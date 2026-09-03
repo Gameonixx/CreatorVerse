@@ -275,32 +275,8 @@ public class ContentServiceTest {
 
     // ================= ROLE AUTHORIZATION TESTS (Create) =================
     
-    @Test
-    void createContent_Fails_ForUserRole() {
-        try (MockedStatic<SecurityUtils> securityUtils = Mockito.mockStatic(SecurityUtils.class)) {
-            securityUtils.when(SecurityUtils::getCurrentUsername).thenReturn("user");
-            when(userRepository.findByUsername("user")).thenReturn(Optional.of(normalUser));
-
-            MultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", "test data".getBytes());
-            ContentCreateRequest request = new ContentCreateRequest();
-
-            assertThrows(ForbiddenException.class, () -> contentService.createContent(request, file, false));
-        }
-    }
-    
-    @Test
-    void createContent_Fails_ForBrandRole() {
-        User brandUser = new User("brand", "brand@test.com", "Brand", Role.BRAND);
-        try (MockedStatic<SecurityUtils> securityUtils = Mockito.mockStatic(SecurityUtils.class)) {
-            securityUtils.when(SecurityUtils::getCurrentUsername).thenReturn("brand");
-            when(userRepository.findByUsername("brand")).thenReturn(Optional.of(brandUser));
-
-            MultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", "test data".getBytes());
-            ContentCreateRequest request = new ContentCreateRequest();
-
-            assertThrows(ForbiddenException.class, () -> contentService.createContent(request, file, false));
-        }
-    }
+    // Role-based restrictions for content creation were removed in Phase 4.4.3E.
+    // All authenticated users can now create content.
     
     @Test
     void createContent_Success_ForAdminRole() {

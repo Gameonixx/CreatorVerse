@@ -28,5 +28,5 @@ public interface ContentService {
     
     org.springframework.data.domain.Page<ContentResponse> getPublicFeed(int page, int size);
     
-    org.springframework.data.domain.Page<ContentResponse> getPublicContentByCreatorId(Long creatorId, int page, int size);
+    org.springframework.data.domain.Page<ContentResponse> getPublicContentByUserId(Long userId, int page, int size);
 }
