@@ -1,17 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import FollowButton from '../social/FollowButton';
 import UserListModal from '../social/UserListModal';
 import { api } from '../../services/api';
 
-export default function UserProfileHeader({ profileData, displayName, onFollowChange, isOwnProfile }) {
+export default function UserProfileHeader({ 
+  profileData, 
+  displayName, 
+  onFollowChange, 
+  isOwnProfile,
+  hasCreatorProfile,
+  hasBrandProfile,
+  onActivateCreator,
+  onDeactivateCreator,
+  onActivateBrand,
+  onDeactivateBrand
+}) {
+  const navigate = useNavigate();
   const [modalState, setModalState] = useState({ isOpen: false, type: 'followers' });
   const [isEditingBio, setIsEditingBio] = useState(false);
   const [editBioText, setEditBioText] = useState('');
   const [isSavingBio, setIsSavingBio] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   if (!profileData) return null;
 
-  const { niche, bio, followerCount, engagementRate, isFollowedByCurrentUser } = profileData;
+  const { niche, bio, followerCount, engagementRate, isFollowedByCurrentUser, companyName, industry, websiteUrl, logoUrl } = profileData;
   const targetUserId = profileData.userId || profileData.id;
   const nameToDisplay = displayName || 'Creator Profile';
 
@@ -46,12 +71,68 @@ export default function UserProfileHeader({ profileData, displayName, onFollowCh
   };
 
   return (
-    <header className="creator-profile-header">
+    <header className="creator-profile-header" style={{ position: 'relative' }}>
+      
+      {isOwnProfile && (
+        <div className="profile-actions-menu" ref={menuRef} style={{ position: 'absolute', top: '0', right: '0' }}>
+          <button 
+            className="btn icon-btn" 
+            onClick={() => setIsMenuOpen(!isMenuOpen)} 
+            aria-label="More profile actions"
+            style={{ background: 'transparent', border: 'none', fontSize: '1.5rem', padding: '0.2rem 0.5rem', cursor: 'pointer', color: 'var(--text-secondary)' }}
+          >
+            ⋮
+          </button>
+          
+          {isMenuOpen && (
+            <div className="card" style={{ position: 'absolute', top: '100%', right: '0', zIndex: 10, minWidth: '220px', padding: '0.5rem 0', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+              <div style={{ padding: '0.5rem 1rem', fontSize: '0.8rem', fontWeight: 'bold', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Professional
+              </div>
+              <hr style={{ margin: '0.25rem 0', border: 'none', borderTop: '1px solid var(--border-color)' }} />
+              
+              {!hasCreatorProfile && (
+                 <button className="menu-item text-left" style={{ width: '100%', background: 'none', border: 'none', padding: '0.75rem 1rem', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.95rem' }} onClick={() => { onActivateCreator(); setIsMenuOpen(false); }}>Activate Creator Mode</button>
+              )}
+              {hasCreatorProfile && (
+                 <button className="menu-item text-left" style={{ width: '100%', background: 'none', border: 'none', padding: '0.75rem 1rem', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.95rem' }} onClick={() => { navigate('/dashboard/creator'); setIsMenuOpen(false); }}>Creator Dashboard</button>
+              )}
+              
+              {!hasBrandProfile && (
+                 <button className="menu-item text-left" style={{ width: '100%', background: 'none', border: 'none', padding: '0.75rem 1rem', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.95rem' }} onClick={() => { onActivateBrand(); setIsMenuOpen(false); }}>Activate Brand Mode</button>
+              )}
+              {hasBrandProfile && (
+                 <button className="menu-item text-left" style={{ width: '100%', background: 'none', border: 'none', padding: '0.75rem 1rem', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.95rem' }} onClick={() => { navigate('/dashboard/brand'); setIsMenuOpen(false); }}>Brand Dashboard</button>
+              )}
+              
+              {(hasCreatorProfile || hasBrandProfile) && (
+                <>
+                  <hr style={{ margin: '0.5rem 0', border: 'none', borderTop: '1px solid var(--border-color)' }} />
+                  {hasCreatorProfile && (
+                    <button className="menu-item text-left text-danger" style={{ width: '100%', background: 'none', border: 'none', padding: '0.75rem 1rem', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.95rem', color: '#ff4444' }} onClick={() => { onDeactivateCreator(); setIsMenuOpen(false); }}>Deactivate Creator Mode</button>
+                  )}
+                  {hasBrandProfile && (
+                    <button className="menu-item text-left text-danger" style={{ width: '100%', background: 'none', border: 'none', padding: '0.75rem 1rem', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.95rem', color: '#ff4444' }} onClick={() => { onDeactivateBrand(); setIsMenuOpen(false); }}>Deactivate Brand Mode</button>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
       <h1 className="creator-name">{nameToDisplay}</h1>
       
       {niche && (
-        <div className="creator-niche">
+        <div className="creator-niche" style={{ marginBottom: '0.5rem' }}>
           {niche}
+        </div>
+      )}
+      
+      {companyName && (
+        <div className="brand-metadata" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '1rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+          <div style={{ fontWeight: 'bold' }}>{companyName} {industry ? `• ${industry}` : ''}</div>
+          {websiteUrl && <a href={websiteUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--accent-primary)' }}>{websiteUrl}</a>}
         </div>
       )}
       

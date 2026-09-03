@@ -10,6 +10,8 @@ import UserProfilePage from './pages/UserProfilePage';
 import ContentDetailPage from './pages/ContentDetailPage';
 import UploadPage from './pages/UploadPage';
 import MyContentPage from './pages/MyContentPage';
+import CreatorDashboard from './pages/CreatorDashboard';
+import BrandDashboard from './pages/BrandDashboard';
 
 function App() {
   return (
@@ -31,6 +33,8 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/upload" element={<UploadPage />} />
           <Route path="/my-content" element={<MyContentPage />} />
+          <Route path="/dashboard/creator" element={<CreatorDashboard />} />
+          <Route path="/dashboard/brand" element={<BrandDashboard />} />
         </Route>
       </Route>
     </Routes>

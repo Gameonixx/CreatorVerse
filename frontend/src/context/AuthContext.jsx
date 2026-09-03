@@ -5,6 +5,8 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [hasCreatorMode, setHasCreatorMode] = useState(false);
+  const [hasBrandMode, setHasBrandMode] = useState(false);
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
 
@@ -15,11 +17,14 @@ export const AuthProvider = ({ children }) => {
         const response = await api.get('/users/me');
         setUser(response);
         localStorage.setItem('user', JSON.stringify(response));
+        await checkProfileModes(response.id);
       } catch (err) {
         console.error("Failed to fetch user profile", err);
         const savedUser = localStorage.getItem('user');
         if (savedUser) {
-          setUser(JSON.parse(savedUser));
+          const parsedUser = JSON.parse(savedUser);
+          setUser(parsedUser);
+          await checkProfileModes(parsedUser.id);
         }
       } finally {
         setLoading(false);
@@ -48,6 +53,7 @@ export const AuthProvider = ({ children }) => {
         }; 
         setUser(userObj);
         localStorage.setItem('user', JSON.stringify(userObj));
+        await checkProfileModes(response.userId);
       }
       return response;
     } catch (error) {
@@ -67,12 +73,37 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setToken(null);
     setUser(null);
+    setHasCreatorMode(false);
+    setHasBrandMode(false);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
   };
 
+  const checkProfileModes = async (userId) => {
+    if (!userId) return;
+    try {
+      await api.get(`/creators/profile/${userId}`);
+      setHasCreatorMode(true);
+    } catch {
+      setHasCreatorMode(false);
+    }
+    
+    try {
+      await api.get(`/brands/profile/${userId}`);
+      setHasBrandMode(true);
+    } catch {
+      setHasBrandMode(false);
+    }
+  };
+
+  const refreshProfileModes = async () => {
+    if (user && user.id) {
+      await checkProfileModes(user.id);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ user, token, hasCreatorMode, hasBrandMode, refreshProfileModes, login, register, logout, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );

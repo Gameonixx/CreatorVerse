@@ -27,7 +27,7 @@ public class BrandProfileController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('BRAND') or hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<BrandProfileResponse> createProfile(@RequestParam Long userId, @Valid @RequestBody BrandProfileCreateRequest request) {
         verifyOwnershipOrAdmin(userId);
         BrandProfileResponse response = brandProfileService.createProfile(userId, request);
@@ -41,12 +41,27 @@ public class BrandProfileController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/public/{userId}")
+    public ResponseEntity<BrandProfileResponse> getPublicProfile(@PathVariable Long userId) {
+        // No ownership or admin verification - explicitly public
+        BrandProfileResponse response = brandProfileService.getProfileByUserId(userId);
+        return ResponseEntity.ok(response);
+    }
+
     @PutMapping("/{userId}")
-    @PreAuthorize("hasRole('BRAND') or hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<BrandProfileResponse> updateProfile(@PathVariable Long userId, @Valid @RequestBody BrandProfileUpdateRequest request) {
         verifyOwnershipOrAdmin(userId);
         BrandProfileResponse response = brandProfileService.updateProfile(userId, request);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{userId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> deleteProfile(@PathVariable Long userId) {
+        verifyOwnershipOrAdmin(userId);
+        brandProfileService.deleteProfile(userId);
+        return ResponseEntity.noContent().build();
     }
 
     private void verifyOwnershipOrAdmin(Long id) {

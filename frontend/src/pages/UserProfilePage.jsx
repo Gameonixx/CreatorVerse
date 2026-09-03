@@ -8,14 +8,18 @@ import UserContentGrid from '../components/user/UserContentGrid';
 export default function UserProfilePage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, refreshProfileModes, hasCreatorMode, hasBrandMode } = useAuth();
   
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [displayName, setDisplayName] = useState('');
   const [hasCreatorProfile, setHasCreatorProfile] = useState(false);
+  const [hasBrandProfile, setHasBrandProfile] = useState(false);
   const [upgrading, setUpgrading] = useState(false);
+  
+  const [showBrandForm, setShowBrandForm] = useState(false);
+  const [brandForm, setBrandForm] = useState({ companyName: '', industry: '', description: '', websiteUrl: '' });
 
   const fetchProfileData = async () => {
     try {
@@ -31,12 +35,20 @@ export default function UserProfilePage() {
         creatorData = await api.get(`/creators/profile/public/${id}`);
         setHasCreatorProfile(true);
       } catch (err) {
-        // 404 is normal if they are just a standard user
         setHasCreatorProfile(false);
       }
       
-      // Merge data
-      setProfile({ ...userData, ...creatorData });
+      // 3. Attempt to fetch brand profile info
+      let brandData = null;
+      try {
+        brandData = await api.get(`/brands/profile/public/${id}`);
+        setHasBrandProfile(true);
+      } catch (err) {
+        setHasBrandProfile(false);
+      }
+      
+      // Merge data (note: overlapping fields might need care, but for now we merge)
+      setProfile({ ...userData, ...creatorData, ...brandData });
     } catch (err) {
       setError('Failed to load user profile');
     } finally {
@@ -72,23 +84,57 @@ export default function UserProfilePage() {
         niche: 'Digital Creator'
       });
       await fetchProfileData();
+      if (refreshProfileModes) await refreshProfileModes();
     } catch (err) {
-      console.error('Failed to upgrade account', err);
-      alert('Failed to upgrade account: ' + (err.message || 'Unknown error'));
+      console.error('Failed to activate creator mode', err);
+      alert('Failed to activate creator mode: ' + (err.message || 'Unknown error'));
     } finally {
       setUpgrading(false);
     }
   };
 
   const handleDowngrade = async () => {
-    if (!window.confirm("Are you sure you want to switch to a Personal Account? Your Creator Profile metadata will be permanently deleted. Your content will remain intact.")) return;
+    if (!window.confirm("Are you sure you want to deactivate Creator Mode? Your universal User account, content, followers, following, likes, comments, bio and avatar will remain intact.")) return;
     try {
       setUpgrading(true);
       await api.delete(`/creators/profile/${id}`);
       await fetchProfileData();
+      if (refreshProfileModes) await refreshProfileModes();
     } catch (err) {
-      console.error('Failed to switch to personal account', err);
-      alert('Failed to switch to personal account: ' + (err.message || 'Unknown error'));
+      console.error('Failed to deactivate creator mode', err);
+      alert('Failed to deactivate creator mode: ' + (err.message || 'Unknown error'));
+    } finally {
+      setUpgrading(false);
+    }
+  };
+
+  const handleActivateBrand = async (e) => {
+    e.preventDefault();
+    if (!brandForm.companyName) return alert("Company name is required.");
+    try {
+      setUpgrading(true);
+      await api.post(`/brands/profile?userId=${id}`, brandForm);
+      await fetchProfileData();
+      if (refreshProfileModes) await refreshProfileModes();
+      setShowBrandForm(false);
+    } catch (err) {
+      console.error('Failed to activate brand mode', err);
+      alert('Failed to activate brand mode: ' + (err.message || 'Unknown error'));
+    } finally {
+      setUpgrading(false);
+    }
+  };
+
+  const handleDeactivateBrand = async () => {
+    if (!window.confirm("Are you sure you want to deactivate Brand Mode? Your universal User account, content, followers, following, likes, comments, bio and avatar will remain intact.")) return;
+    try {
+      setUpgrading(true);
+      await api.delete(`/brands/profile/${id}`);
+      await fetchProfileData();
+      if (refreshProfileModes) await refreshProfileModes();
+    } catch (err) {
+      console.error('Failed to deactivate brand mode', err);
+      alert('Failed to deactivate brand mode: ' + (err.message || 'Unknown error'));
     } finally {
       setUpgrading(false);
     }
@@ -102,26 +148,6 @@ export default function UserProfilePage() {
         <button className="btn back-btn" onClick={handleBack} style={{ background: 'transparent', padding: '0', border: 'none', textDecoration: 'underline', cursor: 'pointer' }}>
           &larr; Back to Explore
         </button>
-        <div className="creator-action-buttons">
-          {isOwnProfile && !hasCreatorProfile && !loading && !error && (
-            <button 
-              className="btn btn-primary action-btn" 
-              onClick={handleUpgrade}
-              disabled={upgrading}
-            >
-              {upgrading ? 'Upgrading...' : 'Switch to Professional Account'}
-            </button>
-          )}
-          {isOwnProfile && hasCreatorProfile && !loading && !error && (
-            <button 
-              className="btn action-btn" 
-              onClick={handleDowngrade}
-              disabled={upgrading}
-            >
-              {upgrading ? 'Switching...' : 'Switch to Personal Account'}
-            </button>
-          )}
-        </div>
       </div>
 
       {loading && (
@@ -137,12 +163,48 @@ export default function UserProfilePage() {
       )}
 
       {!loading && !error && profile && (
-        <UserProfileHeader 
-          profileData={profile} 
-          displayName={displayName || profile.displayName || profile.username} 
-          onFollowChange={handleFollowChange}
-          isOwnProfile={isOwnProfile}
-        />
+        <>
+          <UserProfileHeader 
+            profileData={profile} 
+            displayName={displayName || profile.displayName || profile.username} 
+            onFollowChange={handleFollowChange}
+            isOwnProfile={isOwnProfile}
+            hasCreatorProfile={isOwnProfile ? hasCreatorMode : hasCreatorProfile}
+            hasBrandProfile={isOwnProfile ? hasBrandMode : hasBrandProfile}
+            onActivateCreator={handleUpgrade}
+            onDeactivateCreator={handleDowngrade}
+            onActivateBrand={() => setShowBrandForm(true)}
+            onDeactivateBrand={handleDeactivateBrand}
+          />
+          
+          {showBrandForm && !hasBrandProfile && (
+            <div className="brand-activation-form card" style={{ maxWidth: '600px', margin: '0 auto 2rem auto', padding: '1.5rem' }}>
+              <h3 style={{ marginTop: '0', marginBottom: '1rem', fontSize: '1.1rem' }}>Activate Brand Mode</h3>
+              <form onSubmit={handleActivateBrand} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem' }}>Brand / Company Name</label>
+                  <input type="text" value={brandForm.companyName} onChange={e => setBrandForm({...brandForm, companyName: e.target.value})} required className="form-input" style={{ width: '100%', padding: '0.6rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem' }}>Industry</label>
+                  <input type="text" value={brandForm.industry} onChange={e => setBrandForm({...brandForm, industry: e.target.value})} required className="form-input" style={{ width: '100%', padding: '0.6rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem' }}>Description</label>
+                  <textarea value={brandForm.description} onChange={e => setBrandForm({...brandForm, description: e.target.value})} className="form-input" style={{ width: '100%', padding: '0.6rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }} rows={3}></textarea>
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem' }}>Website</label>
+                  <input type="url" value={brandForm.websiteUrl} onChange={e => setBrandForm({...brandForm, websiteUrl: e.target.value})} className="form-input" style={{ width: '100%', padding: '0.6rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }} />
+                </div>
+                <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
+                  <button type="submit" className="btn primary" disabled={upgrading}>{upgrading ? 'Activating...' : 'Activate Brand Mode'}</button>
+                  <button type="button" className="btn" onClick={() => setShowBrandForm(false)} disabled={upgrading}>Cancel</button>
+                </div>
+              </form>
+            </div>
+          )}
+        </>
       )}
 
       <UserContentGrid 

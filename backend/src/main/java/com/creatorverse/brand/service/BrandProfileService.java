@@ -32,9 +32,7 @@ public class BrandProfileService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
-        if (user.getRole() != Role.BRAND && user.getRole() != Role.ADMIN) {
-             throw new IllegalArgumentException("User must have BRAND role to create a brand profile");
-        }
+        // Removed role check allowing standard users to create brand profiles
 
         BrandProfile profile = new BrandProfile();
         profile.setUser(user);
@@ -68,6 +66,13 @@ public class BrandProfileService {
 
         profile = brandProfileRepository.save(profile);
         return mapToResponse(profile);
+    }
+
+    @Transactional
+    public void deleteProfile(Long userId) {
+        BrandProfile profile = brandProfileRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("BrandProfile not found for user: " + userId));
+        brandProfileRepository.delete(profile);
     }
 
     private BrandProfileResponse mapToResponse(BrandProfile profile) {

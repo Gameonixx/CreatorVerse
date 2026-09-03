@@ -3,9 +3,10 @@ import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Navbar() {
-  const { user, logout } = useAuth();
+  const { user, logout, hasCreatorMode, hasBrandMode } = useAuth();
   const navigate = useNavigate();
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
+  const [isContextDropdownOpen, setIsContextDropdownOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -64,6 +65,30 @@ export default function Navbar() {
             <>
               <Link to="/upload" className="btn primary">Upload</Link>
               <Link to="/my-content" className="btn">My Content</Link>
+              
+              {hasCreatorMode && !hasBrandMode && (
+                <Link to="/dashboard/creator" className="btn" title="Creator Dashboard">Creator Mode</Link>
+              )}
+              {!hasCreatorMode && hasBrandMode && (
+                <Link to="/dashboard/brand" className="btn" title="Brand Dashboard">Brand Mode</Link>
+              )}
+              {hasCreatorMode && hasBrandMode && (
+                <div style={{ position: 'relative' }}>
+                  <button 
+                    className="btn" 
+                    onClick={() => setIsContextDropdownOpen(!isContextDropdownOpen)}
+                  >
+                    Professional Context ▼
+                  </button>
+                  {isContextDropdownOpen && (
+                    <div className="card" style={{ position: 'absolute', top: '100%', right: 0, marginTop: '0.5rem', display: 'flex', flexDirection: 'column', minWidth: '180px', zIndex: 10 }}>
+                      <Link to="/dashboard/creator" className="menu-item" onClick={() => setIsContextDropdownOpen(false)}>Creator Dashboard</Link>
+                      <Link to="/dashboard/brand" className="menu-item" onClick={() => setIsContextDropdownOpen(false)}>Brand Dashboard</Link>
+                    </div>
+                  )}
+                </div>
+              )}
+              
               <button onClick={handleLogout} className="btn">Log Out</button>
             </>
           ) : (
@@ -90,6 +115,8 @@ export default function Navbar() {
                   <Link to="/upload" className="menu-item" onClick={closeMenu}>Upload</Link>
                   <Link to="/my-content" className="menu-item" onClick={closeMenu}>My Content</Link>
                   <Link to={`/user/${user.id}`} className="menu-item" onClick={closeMenu}>Profile</Link>
+                  {hasCreatorMode && <Link to="/dashboard/creator" className="menu-item" onClick={closeMenu}>Creator Dashboard</Link>}
+                  {hasBrandMode && <Link to="/dashboard/brand" className="menu-item" onClick={closeMenu}>Brand Dashboard</Link>}
                 </div>
                 <div className="menu-group">
                   <button className="menu-item text-left" style={{ width: '100%', background: 'none', border: 'none', padding: '1rem', cursor: 'pointer', fontWeight: 600, fontFamily: 'var(--font-body)', fontSize: '1rem' }} onClick={handleLogout}>Log Out</button>
