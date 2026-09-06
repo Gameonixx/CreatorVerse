@@ -7,7 +7,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "creator_profiles")
+@Table(name = "creator_profiles", indexes = {
+    @Index(name = "idx_creator_profile_niche", columnList = "niche")
+})
 public class CreatorProfile {
 
     @Id

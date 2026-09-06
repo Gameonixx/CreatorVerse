@@ -26,13 +26,18 @@ const request = async (endpoint, options = {}) => {
     const error = new Error(errorData?.message || errorData?.error || 'API Request failed');
     error.status = response.status;
     error.data = errorData;
-    
-    // Log the actual error for development diagnostics
-    console.error(`[API Error] ${options.method || 'GET'} ${endpoint} failed with status ${response.status}:`, {
-      errorData,
-      url: response.url
-    });
-    
+
+    // Suppress console error for expected 404s (e.g. optional BrandProfile missing)
+    const isExpected404 = response.status === 404 && endpoint.includes('/brands/profile');
+
+    if (!isExpected404) {
+      // Log the actual error for development diagnostics
+      console.error(`[API Error] ${options.method || 'GET'} ${endpoint} failed with status ${response.status}:`, {
+        errorData,
+        url: response.url
+      });
+    }
+
     throw error;
   }
 
@@ -46,7 +51,7 @@ const request = async (endpoint, options = {}) => {
 
 export const api = {
   get: (endpoint, options) => request(endpoint, { method: 'GET', ...options }),
-  
+
   post: (endpoint, data, options = {}) => {
     const isFormData = data instanceof FormData;
     return request(endpoint, {

@@ -12,6 +12,7 @@ import UploadPage from './pages/UploadPage';
 import MyContentPage from './pages/MyContentPage';
 import CreatorDashboard from './pages/CreatorDashboard';
 import BrandDashboard from './pages/BrandDashboard';
+import CreatorDiscoveryPage from './pages/CreatorDiscoveryPage';
 
 function App() {
   return (
@@ -25,8 +26,8 @@ function App() {
         <Route path="/user/:id" element={<UserProfilePage />} />
         <Route path="/content/:id" element={<ContentDetailPage />} />
         
-        {/* Placeholder Public Routes from Navbar */}
-        <Route path="/creators" element={<div className="page-container"><h1 className="page-title">Creators</h1></div>} />
+        {/* Public Routes from Navbar */}
+        <Route path="/creators" element={<CreatorDiscoveryPage />} />
         <Route path="/campaigns" element={<div className="page-container"><h1 className="page-title">Campaigns</h1></div>} />
 
         {/* Protected Routes */}
