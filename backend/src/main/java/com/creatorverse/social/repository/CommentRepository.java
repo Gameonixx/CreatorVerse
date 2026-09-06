@@ -17,4 +17,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     @org.springframework.data.jpa.repository.Query("SELECT c.content.id, COUNT(c) FROM Comment c WHERE c.content IN :contents GROUP BY c.content.id")
     List<Object[]> countCommentsForContents(@org.springframework.data.repository.query.Param("contents") List<Content> contents);
+
+    @org.springframework.data.jpa.repository.Query("SELECT c.content.creator.id, COUNT(c) FROM Comment c WHERE c.content.status = :status GROUP BY c.content.creator.id")
+    List<Object[]> countCommentsOnPostsPerCreatorByStatus(@org.springframework.data.repository.query.Param("status") com.creatorverse.content.entity.enums.ContentStatus status);
 }

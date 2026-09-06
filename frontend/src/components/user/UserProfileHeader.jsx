@@ -183,7 +183,9 @@ export default function UserProfileHeader({
           <span className="stat-label" style={{ textDecoration: 'underline' }}>Followers</span>
         </div>
         <div className="stat-item">
-          <span className="stat-value">{engagementRate != null ? `${engagementRate.toFixed(1)}%` : '0.0%'}</span>
+          <span className="stat-value" style={engagementRate == null ? {fontSize: '0.85em', fontWeight: 'normal'} : {}}>
+            {engagementRate != null ? `${engagementRate.toFixed(2)}%` : 'Not enough data'}
+          </span>
           <span className="stat-label">Engagement</span>
         </div>
       </div>

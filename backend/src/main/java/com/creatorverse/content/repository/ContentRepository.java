@@ -17,4 +17,7 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
     List<Content> findByCreatorIdAndStatus(Long creatorId, ContentStatus status);
     Page<Content> findByStatusAndVisibility(ContentStatus status, ContentVisibility visibility, Pageable pageable);
     Page<Content> findByCreatorIdAndStatusAndVisibility(Long creatorId, ContentStatus status, ContentVisibility visibility, Pageable pageable);
+
+    @org.springframework.data.jpa.repository.Query("SELECT c.creator.id, COUNT(c) FROM Content c WHERE c.status = :status GROUP BY c.creator.id")
+    List<Object[]> countPostsPerCreatorByStatus(@org.springframework.data.repository.query.Param("status") ContentStatus status);
 }

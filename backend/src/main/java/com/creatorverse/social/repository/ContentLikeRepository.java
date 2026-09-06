@@ -21,4 +21,7 @@ public interface ContentLikeRepository extends JpaRepository<ContentLike, Long> 
 
     @org.springframework.data.jpa.repository.Query("SELECT c.content.id FROM ContentLike c WHERE c.content IN :contents AND c.user = :user")
     List<Long> findLikedContentIds(@org.springframework.data.repository.query.Param("contents") List<Content> contents, @org.springframework.data.repository.query.Param("user") User user);
+
+    @org.springframework.data.jpa.repository.Query("SELECT c.content.creator.id, COUNT(c) FROM ContentLike c WHERE c.content.status = :status GROUP BY c.content.creator.id")
+    List<Object[]> countLikesOnPostsPerCreatorByStatus(@org.springframework.data.repository.query.Param("status") com.creatorverse.content.entity.enums.ContentStatus status);
 }
