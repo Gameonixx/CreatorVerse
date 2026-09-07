@@ -11,4 +11,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 public interface CreatorProfileRepository extends JpaRepository<CreatorProfile, Long>, JpaSpecificationExecutor<CreatorProfile> {
     Optional<CreatorProfile> findByUserId(Long userId);
     boolean existsByUserId(Long userId);
+    java.util.List<CreatorProfile> findByUserIdIn(java.util.List<Long> userIds);
 }

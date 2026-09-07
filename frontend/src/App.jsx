@@ -13,6 +13,8 @@ import MyContentPage from './pages/MyContentPage';
 import CreatorDashboard from './pages/CreatorDashboard';
 import BrandDashboard from './pages/BrandDashboard';
 import CreatorDiscoveryPage from './pages/CreatorDiscoveryPage';
+import CampaignDiscoveryPage from './pages/CampaignDiscoveryPage';
+import CampaignDetailPage from './pages/CampaignDetailPage';
 
 function App() {
   return (
@@ -28,7 +30,8 @@ function App() {
         
         {/* Public Routes from Navbar */}
         <Route path="/creators" element={<CreatorDiscoveryPage />} />
-        <Route path="/campaigns" element={<div className="page-container"><h1 className="page-title">Campaigns</h1></div>} />
+        <Route path="/campaigns" element={<CampaignDiscoveryPage />} />
+        <Route path="/campaigns/:id" element={<CampaignDetailPage />} />
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>

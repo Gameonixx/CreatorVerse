@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface BrandProfileRepository extends JpaRepository<BrandProfile, Long> {
     Optional<BrandProfile> findByUserId(Long userId);
     boolean existsByUserId(Long userId);
+    java.util.List<BrandProfile> findByUserIdIn(java.util.List<Long> userIds);
 }
