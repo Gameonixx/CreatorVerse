@@ -377,10 +377,11 @@
   }
 
   .discovery-title {
-    font-size: clamp(2.3rem, 8vw, 2.7rem);
-    line-height: 1.05;
+    font-size: clamp(1.5rem, 7vw, 2.7rem);
+    line-height: 1.1;
     margin-top: 0;
     margin-bottom: 0.5rem;
+    white-space: normal;
   }
 
   .discovery-subtitle {

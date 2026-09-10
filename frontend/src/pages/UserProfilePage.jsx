@@ -145,8 +145,10 @@ export default function UserProfilePage() {
   return (
     <div className="creator-profile-page">
       <div className="creator-profile-actions">
-        <button className="btn back-btn" onClick={handleBack} style={{ background: 'transparent', padding: '0', border: 'none', textDecoration: 'underline', cursor: 'pointer' }}>
-          &larr; Back to Explore
+        <button className="btn back-btn" onClick={handleBack} style={{ background: 'transparent', padding: '0.5rem', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} aria-label="Go Back">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
         </button>
       </div>
 

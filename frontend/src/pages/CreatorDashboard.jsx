@@ -48,7 +48,7 @@ export default function CreatorDashboard() {
 
   if (hasProfile === false) {
     return (
-      <div className="dashboard-container" style={{ padding: '2rem', textAlign: 'center' }}>
+      <div className="dashboard-container" style={{ textAlign: 'center' }}>
         <h2>Creator Dashboard Restricted</h2>
         <p>You need to activate a Creator Profile to access this workspace.</p>
         <Link to={`/user/${user.id}`} className="btn primary" style={{ marginTop: '1rem', display: 'inline-block' }}>Go to Profile Settings</Link>
@@ -57,8 +57,8 @@ export default function CreatorDashboard() {
   }
 
   return (
-    <div className="dashboard-container" style={{ padding: '2rem', maxWidth: '1000px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+    <div className="dashboard-container">
+      <div className="dashboard-header">
         <div>
           <h1 style={{ margin: 0 }}>Creator Dashboard</h1>
           <p style={{ color: 'var(--text-secondary)', margin: '0.5rem 0 0 0' }}>Welcome to your workspace, {user?.displayName || user?.username}.</p>
@@ -69,24 +69,24 @@ export default function CreatorDashboard() {
       <div>
         <h3>My Applications</h3>
         {loading ? <p>Loading...</p> : applications.length === 0 ? <p style={{ color: 'var(--text-secondary)' }}>You haven't applied to any campaigns yet.</p> : (
-          <div style={{ display: 'grid', gap: '1rem' }}>
+          <div className="dashboard-list">
             {applications.map(app => (
-              <div key={app.id} style={{ padding: '1.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
+              <div key={app.id} className="dashboard-list-item">
+                <div className="dashboard-list-item-content">
                   <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
                     <span style={{ fontWeight: 'bold', marginRight: '1rem', color: app.status === 'PENDING' ? '#FFC107' : app.status === 'ACCEPTED' ? '#4CAF50' : app.status === 'REJECTED' ? '#ff4444' : 'var(--text-secondary)' }}>
                       {app.status}
                     </span>
                     <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Applied: {new Date(app.createdAt).toLocaleDateString()}</span>
                   </div>
-                  <h4 style={{ margin: '0 0 0.5rem 0' }}>
+                  <h4 className="dashboard-list-item-title">
                     <Link to={`/campaigns/${app.campaignId}`} style={{ color: 'inherit' }}>Campaign #{app.campaignId}</Link>
                   </h4>
-                  <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)', maxWidth: '500px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <p className="dashboard-list-item-desc">
                     "{app.message}"
                   </p>
                 </div>
-                <div>
+                <div className="dashboard-list-item-actions">
                   {app.status === 'PENDING' && (
                     <button className="btn" style={{ border: '1px solid #ff4444', color: '#ff4444', background: 'transparent' }} onClick={() => handleWithdraw(app.id)}>Withdraw</button>
                   )}
@@ -98,18 +98,18 @@ export default function CreatorDashboard() {
       </div>
 
       {/* Roadmap Cleanup */}
-      <div className="dashboard-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid var(--border-color)' }}>
-        <div className="dashboard-card" style={{ padding: '1rem', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
+      <div className="dashboard-grid" style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: 'var(--border-width) solid var(--color-border)' }}>
+        <div className="card">
           <h3>Analytics</h3>
-          <p style={{ color: 'var(--text-secondary)' }}>Active (Phase 5.3)</p>
+          <p style={{ color: 'var(--color-text-secondary)' }}>Track your performance and audience growth insights.</p>
         </div>
-        <div className="dashboard-card" style={{ padding: '1rem', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
+        <div className="card">
           <h3>Campaigns</h3>
-          <p style={{ color: 'var(--text-secondary)' }}>Active (Phase 5.4)</p>
+          <p style={{ color: 'var(--color-text-secondary)' }}>Manage your active applications and brand collaborations.</p>
         </div>
-        <div className="dashboard-card" style={{ padding: '1rem', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
+        <div className="card">
           <h3>Collaborations</h3>
-          <p style={{ color: 'var(--text-secondary)' }}>Coming soon in Phase 5.5...</p>
+          <p style={{ color: 'var(--color-text-secondary)' }}>Future functionality for direct brand partnerships.</p>
         </div>
       </div>
     </div>

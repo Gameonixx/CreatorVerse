@@ -1,0 +1,151 @@
+/* Campaign Styles */
+
+.campaign-search-form {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.campaign-search-form input {
+  flex-grow: 1;
+  min-width: 200px;
+}
+
+.campaign-search-form button {
+  white-space: nowrap;
+}
+
+.campaign-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 1.5rem;
+}
+
+.campaign-card {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  background-color: var(--color-surface);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  height: 100%;
+  box-shadow: 2px 2px 0 var(--color-border);
+  box-sizing: border-box;
+}
+
+.campaign-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 4px 4px 0 var(--color-border);
+}
+
+.campaign-card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.campaign-card-brand-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin-right: 12px;
+  object-fit: cover;
+  border: 1px solid var(--color-border);
+}
+
+.campaign-card-brand-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.campaign-card-brand-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.campaign-card-niche {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.campaign-card-body {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.campaign-card-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  color: var(--color-text-primary);
+  font-family: var(--font-heading);
+  line-height: 1.3;
+}
+
+.campaign-card-desc {
+  margin: 0 0 1.5rem 0;
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  flex-grow: 1;
+}
+
+.campaign-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-top: 1px solid var(--color-border);
+  padding-top: 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.campaign-card-budget {
+  font-weight: 700;
+  color: var(--color-accent);
+  font-size: 1.1rem;
+  background-color: var(--color-text-primary);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.campaign-card-deadline {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.campaign-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: var(--color-bg);
+  border-radius: 12px;
+  border: var(--border-width) solid var(--color-border);
+  box-shadow: 2px 2px 0 var(--color-border);
+}
+
+@media (max-width: 768px) {
+  .campaign-search-form {
+    flex-direction: column;
+  }
+  
+  .campaign-search-form input,
+  .campaign-search-form button {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

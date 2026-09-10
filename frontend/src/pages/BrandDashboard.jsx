@@ -103,7 +103,7 @@ export default function BrandDashboard() {
 
   if (hasProfile === false) {
     return (
-      <div className="dashboard-container" style={{ padding: '2rem', textAlign: 'center' }}>
+      <div className="dashboard-container" style={{ textAlign: 'center' }}>
         <h2>Brand Dashboard Restricted</h2>
         <p>You need to activate a Brand Profile to access this workspace.</p>
         <Link to={`/user/${user.id}`} className="btn primary" style={{ marginTop: '1rem', display: 'inline-block' }}>Go to Profile Settings</Link>
@@ -112,8 +112,8 @@ export default function BrandDashboard() {
   }
 
   return (
-    <div className="dashboard-container" style={{ padding: '2rem', maxWidth: '1000px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+    <div className="dashboard-container">
+      <div className="dashboard-header">
         <div>
           <h1 style={{ margin: 0 }}>Brand Dashboard</h1>
           <p style={{ color: 'var(--text-secondary)', margin: '0.5rem 0 0 0' }}>Welcome to your workspace, {user?.displayName || user?.username}.</p>
@@ -177,18 +177,18 @@ export default function BrandDashboard() {
         <div>
           <h3>My Campaigns</h3>
           {loading ? <p>Loading...</p> : campaigns.length === 0 ? <p style={{ color: 'var(--text-secondary)' }}>You haven't created any campaigns yet.</p> : (
-            <div style={{ display: 'grid', gap: '1rem' }}>
+          <div className="dashboard-list">
               {campaigns.map(camp => (
-                <div key={camp.id} style={{ padding: '1.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <h4 style={{ margin: '0 0 0.5rem 0' }}>{camp.title}</h4>
-                    <div style={{ display: 'flex', gap: '1rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                <div key={camp.id} className="dashboard-list-item">
+                  <div className="dashboard-list-item-content">
+                    <h4 className="dashboard-list-item-title">{camp.title}</h4>
+                    <div className="dashboard-list-item-desc" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                       <span style={{ fontWeight: 'bold', color: camp.status === 'OPEN' ? '#4CAF50' : camp.status === 'DRAFT' ? '#FFC107' : 'var(--text-secondary)' }}>{camp.status}</span>
                       <span>Budget: ${camp.budget}</span>
                       <span>Deadline: {camp.applicationDeadline ? new Date(camp.applicationDeadline).toLocaleDateString() : 'None'}</span>
                     </div>
                   </div>
-                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                  <div className="dashboard-list-item-actions">
                     {camp.status === 'DRAFT' && <button className="btn" onClick={() => handleUpdateStatus(camp.id, 'OPEN')}>Open</button>}
                     {camp.status === 'OPEN' && <button className="btn" onClick={() => handleUpdateStatus(camp.id, 'PAUSED')}>Pause</button>}
                     {(camp.status === 'OPEN' || camp.status === 'PAUSED') && <button className="btn" onClick={() => handleUpdateStatus(camp.id, 'CLOSED')}>Close</button>}
@@ -204,18 +204,18 @@ export default function BrandDashboard() {
       )}
 
       {/* Roadmap Cleanup */}
-      <div className="dashboard-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid var(--border-color)' }}>
-        <div className="dashboard-card" style={{ padding: '1rem', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
+      <div className="dashboard-grid" style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: 'var(--border-width) solid var(--color-border)' }}>
+        <div className="card">
           <h3>Creator Discovery</h3>
-          <p style={{ color: 'var(--text-secondary)' }}>Active (Phase 5.2)</p>
+          <p style={{ color: 'var(--color-text-secondary)' }}>Find and connect with top creators for your brand.</p>
         </div>
-        <div className="dashboard-card" style={{ padding: '1rem', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
+        <div className="card">
           <h3>Analytics</h3>
-          <p style={{ color: 'var(--text-secondary)' }}>Active (Phase 5.3)</p>
+          <p style={{ color: 'var(--color-text-secondary)' }}>Track campaign performance and ROI metrics.</p>
         </div>
-        <div className="dashboard-card" style={{ padding: '1rem', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
+        <div className="card">
           <h3>Collaborations</h3>
-          <p style={{ color: 'var(--text-secondary)' }}>Coming soon in Phase 5.5...</p>
+          <p style={{ color: 'var(--color-text-secondary)' }}>Future functionality for direct creator partnerships.</p>
         </div>
       </div>
     </div>

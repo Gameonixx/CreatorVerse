@@ -4,6 +4,8 @@
 @import './styles/follow-button.css';
 @import './styles/user-card.css';
 @import './styles/modal.css';
+@import './styles/dashboard.css';
+@import './styles/campaign.css';
 
 :root {
   /* Colors */

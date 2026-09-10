@@ -208,18 +208,22 @@
   to { transform: translateY(0); opacity: 1; }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 950px) {
   .home-page {
     padding: 2rem 1rem;
   }
   
   .home-hero-title {
-    font-size: clamp(2.25rem, 11vw, 2.75rem); /* ~36px to 44px depending on screen width */
+    font-size: clamp(1.8rem, 10vw, 2.75rem);
     margin-bottom: 1rem;
-    word-break: break-word;
-    overflow-wrap: break-word;
+    white-space: nowrap;
     max-width: 100%;
     box-sizing: border-box;
+  }
+  
+  .page-title {
+    font-size: clamp(1.4rem, 7vw, 2.5rem);
+    white-space: nowrap;
   }
   
   .home-hero-subtitle {

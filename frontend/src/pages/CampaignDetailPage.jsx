@@ -84,7 +84,7 @@ export default function CampaignDetailPage() {
   const isOpen = campaign.status === 'OPEN';
 
   return (
-    <div className="page-container" style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
+    <div className="page-container" style={{ maxWidth: '800px', margin: '0 auto' }}>
       <Link to="/campaigns" style={{ color: 'var(--text-secondary)', textDecoration: 'none', marginBottom: '1rem', display: 'inline-block' }}>
         &larr; Back to Campaigns
       </Link>
@@ -98,7 +98,7 @@ export default function CampaignDetailPage() {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem', padding: '1rem', background: 'rgba(0,0,0,0.05)', borderRadius: '8px' }}>
+        <div className="campaign-detail-grid">
           <div>
             <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Budget</div>
             <div style={{ fontWeight: 'bold', fontSize: '1.2rem', color: 'var(--accent-primary)' }}>${campaign.budget?.toLocaleString() || 'Negotiable'}</div>

@@ -43,20 +43,19 @@ export default function CampaignDiscoveryPage() {
   };
 
   return (
-    <div className="page-container" style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
+    <div className="page-container" style={{ maxWidth: '1200px', margin: '0 auto' }}>
       <header style={{ textAlign: 'center', marginBottom: '3rem' }}>
         <h1 className="page-title">Campaign Marketplace</h1>
         <p className="discovery-subtitle" style={{ color: 'var(--text-secondary)' }}>Discover opportunities from top brands.</p>
       </header>
 
-      <form onSubmit={handleSearch} style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+      <form onSubmit={handleSearch} className="campaign-search-form">
         <input 
           type="text" 
           placeholder="Search campaigns..." 
           value={search} 
           onChange={(e) => setSearch(e.target.value)} 
           className="form-input"
-          style={{ flexGrow: 1, padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
         />
         <input 
           type="text" 
@@ -64,9 +63,8 @@ export default function CampaignDiscoveryPage() {
           value={niche} 
           onChange={(e) => setNiche(e.target.value)} 
           className="form-input"
-          style={{ width: '200px', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
         />
-        <button type="submit" className="btn primary" style={{ padding: '0.75rem 1.5rem', borderRadius: '8px' }}>Search</button>
+        <button type="submit" className="btn primary">Search</button>
       </form>
 
       {loading ? (
@@ -77,7 +75,7 @@ export default function CampaignDiscoveryPage() {
         <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)' }}>No campaigns found matching your criteria.</div>
       ) : (
         <>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
+          <div className="campaign-grid">
             {campaigns.map(campaign => (
               <CampaignCard key={campaign.id} campaign={campaign} />
             ))}
