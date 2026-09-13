@@ -5,6 +5,7 @@ import com.creatorverse.user.dto.UserCreateRequest;
 import com.creatorverse.user.entity.Role;
 import com.creatorverse.user.entity.User;
 import com.creatorverse.user.repository.UserRepository;
+import com.creatorverse.social.repository.FollowRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -12,13 +13,24 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mockStatic;
+import org.mockito.MockedStatic;
+import com.creatorverse.auth.security.SecurityUtils;
+import java.util.Optional;
 
 class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private FollowRepository followRepository;
 
     @InjectMocks
     private UserService userService;
@@ -48,5 +60,65 @@ class UserServiceTest {
         when(userRepository.existsByEmail("existing@example.com")).thenReturn(true);
         
         assertThrows(DuplicateResourceException.class, () -> userService.createUser(request));
+    }
+
+    @Test
+    void getUser_Authenticated_FollowedUser_ReturnsTrue() {
+        try (MockedStatic<SecurityUtils> securityUtils = mockStatic(SecurityUtils.class)) {
+            securityUtils.when(SecurityUtils::getCurrentUsername).thenReturn("currentuser");
+            
+            User target = new User();
+            target.setId(2L);
+            target.setUsername("targetuser");
+            
+            User current = new User();
+            current.setId(1L);
+            current.setUsername("currentuser");
+            
+            when(userRepository.findById(2L)).thenReturn(Optional.of(target));
+            when(userRepository.findByUsername("currentuser")).thenReturn(Optional.of(current));
+            when(followRepository.existsByFollowerAndFollowing(current, target)).thenReturn(true);
+            
+            var response = userService.getUser(2L);
+            assertTrue(response.getIsFollowedByCurrentUser());
+        }
+    }
+
+    @Test
+    void getUser_Authenticated_NotFollowedUser_ReturnsFalse() {
+        try (MockedStatic<SecurityUtils> securityUtils = mockStatic(SecurityUtils.class)) {
+            securityUtils.when(SecurityUtils::getCurrentUsername).thenReturn("currentuser");
+            
+            User target = new User();
+            target.setId(2L);
+            target.setUsername("targetuser");
+            
+            User current = new User();
+            current.setId(1L);
+            current.setUsername("currentuser");
+            
+            when(userRepository.findById(2L)).thenReturn(Optional.of(target));
+            when(userRepository.findByUsername("currentuser")).thenReturn(Optional.of(current));
+            when(followRepository.existsByFollowerAndFollowing(current, target)).thenReturn(false);
+            
+            var response = userService.getUser(2L);
+            assertFalse(response.getIsFollowedByCurrentUser());
+        }
+    }
+
+    @Test
+    void getUser_AnonymousUser_ReturnsFalse() {
+        try (MockedStatic<SecurityUtils> securityUtils = mockStatic(SecurityUtils.class)) {
+            securityUtils.when(SecurityUtils::getCurrentUsername).thenReturn(null);
+            
+            User target = new User();
+            target.setId(2L);
+            target.setUsername("targetuser");
+            
+            when(userRepository.findById(2L)).thenReturn(Optional.of(target));
+            
+            var response = userService.getUser(2L);
+            assertFalse(response.getIsFollowedByCurrentUser());
+        }
     }
 }

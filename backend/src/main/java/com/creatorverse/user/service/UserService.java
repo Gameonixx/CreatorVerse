@@ -7,6 +7,8 @@ import com.creatorverse.user.dto.UserResponse;
 import com.creatorverse.user.dto.UserUpdateRequest;
 import com.creatorverse.user.entity.User;
 import com.creatorverse.user.repository.UserRepository;
+import com.creatorverse.auth.security.SecurityUtils;
+import com.creatorverse.social.repository.FollowRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -16,9 +18,11 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final FollowRepository followRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, FollowRepository followRepository) {
         this.userRepository = userRepository;
+        this.followRepository = followRepository;
     }
 
     @Transactional
@@ -39,14 +43,25 @@ public class UserService {
     public UserResponse getUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
-        return mapToResponse(user);
+        return mapToResponse(user, checkFollowStatus(user));
     }
     
     @Transactional(readOnly = true)
     public UserResponse getUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
-        return mapToResponse(user);
+        return mapToResponse(user, checkFollowStatus(user));
+    }
+    
+    private boolean checkFollowStatus(User targetUser) {
+        String currentUsername = SecurityUtils.getCurrentUsername();
+        if (currentUsername != null) {
+            User currentUser = userRepository.findByUsername(currentUsername).orElse(null);
+            if (currentUser != null && !currentUser.getId().equals(targetUser.getId())) {
+                return followRepository.existsByFollowerAndFollowing(currentUser, targetUser);
+            }
+        }
+        return false;
     }
     
     @Transactional(readOnly = true)
@@ -79,6 +94,10 @@ public class UserService {
     }
 
     private UserResponse mapToResponse(User user) {
+        return mapToResponse(user, false);
+    }
+
+    private UserResponse mapToResponse(User user, boolean isFollowedByCurrentUser) {
         UserResponse response = new UserResponse();
         response.setId(user.getId());
         response.setUsername(user.getUsername());
@@ -91,6 +110,7 @@ public class UserService {
         response.setAvatarUrl(user.getAvatarUrl());
         response.setCreatedAt(user.getCreatedAt());
         response.setUpdatedAt(user.getUpdatedAt());
+        response.setIsFollowedByCurrentUser(isFollowedByCurrentUser);
         return response;
     }
 }
