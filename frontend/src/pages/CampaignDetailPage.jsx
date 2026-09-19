@@ -123,9 +123,9 @@ export default function CampaignDetailPage() {
         </div>
 
         {isOwner ? (
-          <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.05)', border: '1px dashed var(--accent-primary)', borderRadius: '8px', textAlign: 'center' }}>
-            <p>You are the owner of this campaign.</p>
-            <Link to="/dashboard/brand" className="btn primary">Manage Applications in Dashboard</Link>
+          <div style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.05)', border: '1px dashed var(--accent-primary)', borderRadius: '8px', textAlign: 'center' }}>
+            <p style={{ margin: '0 0 1rem 0' }}>You are the owner of this campaign.</p>
+            <Link to="/dashboard/brand" className="btn primary" style={{ display: 'inline-block', maxWidth: '100%', boxSizing: 'border-box', whiteSpace: 'normal' }}>Manage Applications in Dashboard</Link>
           </div>
         ) : (
           <div style={{ marginTop: '2rem' }}>

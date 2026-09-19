@@ -11,6 +11,8 @@ import com.creatorverse.campaign.repository.CampaignRepository;
 import com.creatorverse.campaign.repository.CampaignSpecification;
 import com.creatorverse.user.entity.User;
 import com.creatorverse.user.repository.UserRepository;
+import com.creatorverse.collaboration.entity.enums.CollaborationStatus;
+import com.creatorverse.collaboration.repository.CollaborationRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -27,15 +29,18 @@ public class CampaignService {
     private final BrandProfileRepository brandProfileRepository;
     private final UserRepository userRepository;
     private final com.creatorverse.campaign.application.repository.CampaignApplicationRepository applicationRepository;
+    private final CollaborationRepository collaborationRepository;
 
     public CampaignService(CampaignRepository campaignRepository, 
                            BrandProfileRepository brandProfileRepository,
                            UserRepository userRepository,
-                           com.creatorverse.campaign.application.repository.CampaignApplicationRepository applicationRepository) {
+                           com.creatorverse.campaign.application.repository.CampaignApplicationRepository applicationRepository,
+                           CollaborationRepository collaborationRepository) {
         this.campaignRepository = campaignRepository;
         this.brandProfileRepository = brandProfileRepository;
         this.userRepository = userRepository;
         this.applicationRepository = applicationRepository;
+        this.collaborationRepository = collaborationRepository;
     }
 
     @Transactional
@@ -76,6 +81,18 @@ public class CampaignService {
                 }
             }
             campaign.setStatus(request.getStatus());
+        }
+
+        boolean termsMutated = request.getTitle() != null || 
+                               request.getDescription() != null || 
+                               request.getNiche() != null || 
+                               request.getBudget() != null || 
+                               request.getApplicationDeadline() != null;
+
+        if (termsMutated) {
+            if (collaborationRepository.existsByCampaignAndStatus(campaign, CollaborationStatus.ACTIVE)) {
+                throw new IllegalStateException("Cannot modify campaign terms while an ACTIVE collaboration exists.");
+            }
         }
 
         if (request.getTitle() != null) campaign.setTitle(request.getTitle());

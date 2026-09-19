@@ -11,6 +11,7 @@ import com.creatorverse.campaign.entity.enums.CampaignStatus;
 import com.creatorverse.campaign.repository.CampaignRepository;
 import com.creatorverse.creator.entity.CreatorProfile;
 import com.creatorverse.creator.repository.CreatorProfileRepository;
+import com.creatorverse.collaboration.service.CollaborationService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,13 +25,16 @@ public class CampaignApplicationService {
     private final CampaignApplicationRepository applicationRepository;
     private final CampaignRepository campaignRepository;
     private final CreatorProfileRepository creatorProfileRepository;
+    private final CollaborationService collaborationService;
 
     public CampaignApplicationService(CampaignApplicationRepository applicationRepository,
                                       CampaignRepository campaignRepository,
-                                      CreatorProfileRepository creatorProfileRepository) {
+                                      CreatorProfileRepository creatorProfileRepository,
+                                      CollaborationService collaborationService) {
         this.applicationRepository = applicationRepository;
         this.campaignRepository = campaignRepository;
         this.creatorProfileRepository = creatorProfileRepository;
+        this.collaborationService = collaborationService;
     }
 
     @Transactional
@@ -106,6 +110,10 @@ public class CampaignApplicationService {
 
         application.setStatus(request.getStatus());
         CampaignApplication saved = applicationRepository.save(application);
+
+        if (saved.getStatus() == ApplicationStatus.ACCEPTED) {
+            collaborationService.createCollaboration(saved);
+        }
 
         CreatorProfile profile = creatorProfileRepository.findByUserId(saved.getCreatorUser().getId()).orElse(null);
         return mapToResponse(saved, profile);

@@ -197,7 +197,7 @@ export default function UserProfilePage() {
                 </div>
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem' }}>Website</label>
-                  <input type="url" value={brandForm.websiteUrl} onChange={e => setBrandForm({...brandForm, websiteUrl: e.target.value})} className="form-input" style={{ width: '100%', padding: '0.6rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }} />
+                  <input type="text" value={brandForm.websiteUrl} onChange={e => setBrandForm({...brandForm, websiteUrl: e.target.value})} className="form-input" style={{ width: '100%', padding: '0.6rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }} />
                 </div>
                 <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
                   <button type="submit" className="btn primary" disabled={upgrading}>{upgrading ? 'Activating...' : 'Activate Brand Mode'}</button>

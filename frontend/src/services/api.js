@@ -79,3 +79,10 @@ export const socialApi = {
   getFollowers: (userId) => api.get(`/social/followers/${userId}`),
   getFollowing: (userId) => api.get(`/social/following/${userId}`),
 };
+
+export const collaborationApi = {
+  getMyCollaborations: (page = 0, size = 10, sortBy = 'createdAt', sortDir = 'desc') => 
+    api.get(`/collaborations/mine?page=${page}&size=${size}&sortBy=${sortBy}&sortDir=${sortDir}`),
+  getCollaboration: (id) => api.get(`/collaborations/${id}`),
+  updateStatus: (id, status) => api.put(`/collaborations/${id}/status`, { status }),
+};

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
-import { api } from '../services/api';
+import { api, collaborationApi } from '../services/api';
 
 export default function CreatorDashboard() {
   const { user } = useAuth();
@@ -9,6 +9,8 @@ export default function CreatorDashboard() {
   
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [collaborations, setCollaborations] = useState([]);
+  const [loadingCollabs, setLoadingCollabs] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -16,6 +18,7 @@ export default function CreatorDashboard() {
         .then(() => {
           setHasProfile(true);
           fetchApplications();
+          fetchCollaborations();
         })
         .catch(() => setHasProfile(false));
     }
@@ -30,6 +33,19 @@ export default function CreatorDashboard() {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCollaborations = async () => {
+    try {
+      setLoadingCollabs(true);
+      const res = await collaborationApi.getMyCollaborations();
+      // Filter to only show those where the user is the creator
+      setCollaborations(res.content.filter(c => c.creatorUserId === user.id));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingCollabs(false);
     }
   };
 
@@ -97,19 +113,41 @@ export default function CreatorDashboard() {
         )}
       </div>
 
+      <div style={{ marginTop: '3rem' }}>
+        <h3>Active Collaborations</h3>
+        {loadingCollabs ? <p>Loading collaborations...</p> : collaborations.length === 0 ? <p style={{ color: 'var(--text-secondary)' }}>You don't have any active collaborations yet.</p> : (
+          <div className="dashboard-list">
+            {collaborations.map(collab => (
+              <div key={collab.id} className="dashboard-list-item">
+                <div className="dashboard-list-item-content">
+                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+                    <span style={{ fontWeight: 'bold', marginRight: '1rem', color: collab.status === 'ACTIVE' ? '#4CAF50' : collab.status === 'CANCELLED' ? '#ff4444' : 'var(--text-secondary)' }}>
+                      {collab.status}
+                    </span>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Created: {new Date(collab.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <h4 className="dashboard-list-item-title">
+                    <Link to={`/collaborations/${collab.id}`} style={{ color: 'inherit' }}>{collab.campaignTitle}</Link>
+                  </h4>
+                  <p className="dashboard-list-item-desc" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <img src={collab.brandLogoUrl || 'https://via.placeholder.com/24'} alt={collab.brandName} style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }} />
+                    Brand: <strong>{collab.brandName}</strong>
+                  </p>
+                </div>
+                <div className="dashboard-list-item-actions">
+                  <Link to={`/collaborations/${collab.id}`} className="btn primary">View Details</Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Roadmap Cleanup */}
       <div className="dashboard-grid" style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: 'var(--border-width) solid var(--color-border)' }}>
         <div className="card">
           <h3>Analytics</h3>
           <p style={{ color: 'var(--color-text-secondary)' }}>Track your performance and audience growth insights.</p>
-        </div>
-        <div className="card">
-          <h3>Campaigns</h3>
-          <p style={{ color: 'var(--color-text-secondary)' }}>Manage your active applications and brand collaborations.</p>
-        </div>
-        <div className="card">
-          <h3>Collaborations</h3>
-          <p style={{ color: 'var(--color-text-secondary)' }}>Future functionality for direct brand partnerships.</p>
         </div>
       </div>
     </div>

@@ -18,13 +18,12 @@ export default function CampaignCard({ campaign }) {
           onError={(e) => { e.target.src = defaultLogo; }} 
         />
         <div className="campaign-card-brand-info">
-          <div className="campaign-card-brand-name">{brandName}</div>
-          <div className="campaign-card-niche">{niche}</div>
+          <h3 className="campaign-card-title">{title}</h3>
+          <div className="campaign-card-brand-name">{brandName} &bull; <span className="campaign-card-niche">{niche}</span></div>
         </div>
       </div>
 
       <div className="campaign-card-body">
-        <h3 className="campaign-card-title">{title}</h3>
         <p className="campaign-card-desc">
           {description?.substring(0, 100)}{description?.length > 100 ? '...' : ''}
         </p>

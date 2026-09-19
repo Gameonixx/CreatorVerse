@@ -7,6 +7,7 @@ import com.creatorverse.campaign.application.repository.CampaignApplicationRepos
 import com.creatorverse.campaign.entity.Campaign;
 import com.creatorverse.campaign.entity.enums.CampaignStatus;
 import com.creatorverse.campaign.repository.CampaignRepository;
+import com.creatorverse.collaboration.service.CollaborationService;
 import com.creatorverse.creator.entity.CreatorProfile;
 import com.creatorverse.creator.repository.CreatorProfileRepository;
 import com.creatorverse.user.entity.User;
@@ -34,6 +35,9 @@ public class CampaignApplicationServiceTest {
 
     @Mock
     private CreatorProfileRepository creatorProfileRepository;
+
+    @Mock
+    private CollaborationService collaborationService;
 
     @InjectMocks
     private CampaignApplicationService applicationService;
@@ -92,5 +96,49 @@ public class CampaignApplicationServiceTest {
         when(campaignRepository.findById(10L)).thenReturn(Optional.of(campaign)); // campaign belongs to brandUser (ID=1)
 
         assertThrows(IllegalStateException.class, () -> applicationService.applyToCampaign(1L, 10L, req), "You cannot apply to your own campaign.");
+    }
+
+    @Test
+    void testReviewApplication_Accepted_CreatesCollaboration() {
+        com.creatorverse.campaign.application.dto.ApplicationReviewRequest req = new com.creatorverse.campaign.application.dto.ApplicationReviewRequest();
+        req.setStatus(ApplicationStatus.ACCEPTED);
+
+        CampaignApplication app = new CampaignApplication();
+        app.setId(100L);
+        app.setCampaign(campaign);
+        app.setCreatorUser(creatorUser);
+        app.setStatus(ApplicationStatus.PENDING);
+
+        when(campaignRepository.findById(10L)).thenReturn(Optional.of(campaign));
+        when(applicationRepository.findById(100L)).thenReturn(Optional.of(app));
+        when(applicationRepository.save(any(CampaignApplication.class))).thenAnswer(i -> i.getArgument(0));
+
+        applicationService.reviewApplication(1L, 10L, 100L, req);
+
+        verify(applicationRepository).save(app);
+        assertEquals(ApplicationStatus.ACCEPTED, app.getStatus());
+        verify(collaborationService, times(1)).createCollaboration(app);
+    }
+
+    @Test
+    void testReviewApplication_Rejected_DoesNotCreateCollaboration() {
+        com.creatorverse.campaign.application.dto.ApplicationReviewRequest req = new com.creatorverse.campaign.application.dto.ApplicationReviewRequest();
+        req.setStatus(ApplicationStatus.REJECTED);
+
+        CampaignApplication app = new CampaignApplication();
+        app.setId(100L);
+        app.setCampaign(campaign);
+        app.setCreatorUser(creatorUser);
+        app.setStatus(ApplicationStatus.PENDING);
+
+        when(campaignRepository.findById(10L)).thenReturn(Optional.of(campaign));
+        when(applicationRepository.findById(100L)).thenReturn(Optional.of(app));
+        when(applicationRepository.save(any(CampaignApplication.class))).thenAnswer(i -> i.getArgument(0));
+
+        applicationService.reviewApplication(1L, 10L, 100L, req);
+
+        verify(applicationRepository).save(app);
+        assertEquals(ApplicationStatus.REJECTED, app.getStatus());
+        verify(collaborationService, never()).createCollaboration(any());
     }
 }

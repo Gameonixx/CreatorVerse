@@ -15,6 +15,7 @@ import BrandDashboard from './pages/BrandDashboard';
 import CreatorDiscoveryPage from './pages/CreatorDiscoveryPage';
 import CampaignDiscoveryPage from './pages/CampaignDiscoveryPage';
 import CampaignDetailPage from './pages/CampaignDetailPage';
+import CollaborationDetailPage from './pages/CollaborationDetailPage';
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
           <Route path="/my-content" element={<MyContentPage />} />
           <Route path="/dashboard/creator" element={<CreatorDashboard />} />
           <Route path="/dashboard/brand" element={<BrandDashboard />} />
+          <Route path="/collaborations/:id" element={<CollaborationDetailPage />} />
         </Route>
       </Route>
     </Routes>
