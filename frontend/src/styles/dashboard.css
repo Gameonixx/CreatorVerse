@@ -55,9 +55,8 @@
   margin: 0;
   font-size: 0.9rem;
   color: var(--color-text-secondary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflowWrap: break-word;
+  wordWrap: break-word;
 }
 
 .dashboard-list-item-actions {
@@ -81,6 +80,11 @@
     width: 100%;
     justify-content: flex-start;
     flex-wrap: wrap;
+  }
+  
+  .dashboard-list-item-content {
+    width: 100%;
+    box-sizing: border-box;
   }
   
   .dashboard-grid {

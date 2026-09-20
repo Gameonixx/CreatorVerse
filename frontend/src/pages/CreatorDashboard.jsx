@@ -106,6 +106,12 @@ export default function CreatorDashboard() {
                   {app.status === 'PENDING' && (
                     <button className="btn" style={{ border: '1px solid #ff4444', color: '#ff4444', background: 'transparent' }} onClick={() => handleWithdraw(app.id)}>Withdraw</button>
                   )}
+                  {app.status === 'ACCEPTED' && (() => {
+                    const relatedCollab = collaborations.find(c => c.originatingApplicationId === app.id);
+                    return relatedCollab ? (
+                      <Link to={`/collaborations/${relatedCollab.id}`} className="btn primary" style={{ padding: '0.5rem 1rem', flex: '1 1 auto', textAlign: 'center' }}>View Collaboration</Link>
+                    ) : null;
+                  })()}
                 </div>
               </div>
             ))}

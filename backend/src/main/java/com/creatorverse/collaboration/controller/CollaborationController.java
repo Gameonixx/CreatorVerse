@@ -34,7 +34,7 @@ public class CollaborationController {
     }
 
     @GetMapping("/mine")
-    @PreAuthorize("hasAnyRole('CREATOR', 'BRAND')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Page<CollaborationResponse>> getMyCollaborations(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -50,7 +50,7 @@ public class CollaborationController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('CREATOR', 'BRAND')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CollaborationResponse> getCollaboration(@PathVariable Long id) {
         User currentUser = getCurrentAuthenticatedUser();
         CollaborationResponse collaboration = collaborationService.getCollaboration(id, currentUser.getId());
@@ -58,7 +58,7 @@ public class CollaborationController {
     }
 
     @PutMapping("/{id}/status")
-    @PreAuthorize("hasAnyRole('CREATOR', 'BRAND')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CollaborationResponse> updateCollaborationStatus(
             @PathVariable Long id,
             @Valid @RequestBody CollaborationStatusUpdateRequest request) {

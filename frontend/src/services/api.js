@@ -85,4 +85,12 @@ export const collaborationApi = {
     api.get(`/collaborations/mine?page=${page}&size=${size}&sortBy=${sortBy}&sortDir=${sortDir}`),
   getCollaboration: (id) => api.get(`/collaborations/${id}`),
   updateStatus: (id, status) => api.put(`/collaborations/${id}/status`, { status }),
+  
+  // Deliverables
+  getDeliverables: (id) => api.get(`/collaborations/${id}/deliverables`),
+  createDeliverable: (id, data) => api.post(`/collaborations/${id}/deliverables`, data),
+  updateDeliverable: (id, deliverableId, data) => api.put(`/collaborations/${id}/deliverables/${deliverableId}`, data),
+  deleteDeliverable: (id, deliverableId) => api.delete(`/collaborations/${id}/deliverables/${deliverableId}`),
+  submitDeliverable: (id, deliverableId, submissionUrl) => api.put(`/collaborations/${id}/deliverables/${deliverableId}/submission`, { submissionUrl }),
+  reviewDeliverable: (id, deliverableId, status, feedback) => api.put(`/collaborations/${id}/deliverables/${deliverableId}/review`, { status, feedback }),
 };

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { collaborationApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import DeliverablesSection from '../components/DeliverablesSection';
 
 export default function CollaborationDetailPage() {
   const { id } = useParams();
@@ -47,9 +48,9 @@ export default function CollaborationDetailPage() {
 
   return (
     <div className="container" style={{ marginTop: '2rem', marginBottom: '4rem' }}>
-      <div className="card" style={{ marginBottom: '2rem', padding: '1.5rem', background: 'var(--bg-primary)' }}>
+      <div className="card" style={{ marginBottom: '2rem', padding: 'clamp(1rem, 4vw, 1.5rem)', background: 'var(--bg-primary)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-          <div style={{ minWidth: 0, flex: 1 }}>
+          <div style={{ minWidth: 0, flex: '1 1 100%' }}>
             <h1 style={{ margin: 0, fontSize: '1.5rem', overflowWrap: 'break-word', wordWrap: 'break-word' }}>Collaboration #{collaboration.id}</h1>
             <div style={{ display: 'flex', alignItems: 'center', marginTop: '0.75rem', gap: '1rem', flexWrap: 'wrap' }}>
               <span style={{ 
@@ -73,7 +74,7 @@ export default function CollaborationDetailPage() {
               {isBrandOwner && (
                 <button 
                   className="btn primary" 
-                  style={{ background: '#1565c0', borderColor: '#1565c0', padding: '0.5rem 1rem' }}
+                  style={{ padding: '0.5rem 1rem' }}
                   onClick={() => handleStatusUpdate('COMPLETED')}
                 >
                   Mark Completed
@@ -95,7 +96,7 @@ export default function CollaborationDetailPage() {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 350px), 1fr))', gap: '2rem' }}>
         {/* Campaign Terms */}
-        <div className="card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column' }}>
+        <div className="card" style={{ padding: 'clamp(1rem, 4vw, 2rem)', display: 'flex', flexDirection: 'column' }}>
           <h3 style={{ marginTop: 0, marginBottom: '1.5rem', borderBottom: '1px solid var(--color-border)', paddingBottom: '0.5rem' }}>Campaign Details</h3>
           <h4 style={{ margin: '0 0 0.5rem 0', overflowWrap: 'break-word', wordWrap: 'break-word' }}>
             <Link to={`/campaigns/${collaboration.campaignId}`} style={{ color: 'inherit' }}>
@@ -119,7 +120,7 @@ export default function CollaborationDetailPage() {
 
         {/* Participants */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div className="card" style={{ padding: '2rem' }}>
+          <div className="card" style={{ padding: 'clamp(1rem, 4vw, 2rem)' }}>
             <h3 style={{ marginTop: 0, marginBottom: '1.5rem', borderBottom: '1px solid var(--color-border)', paddingBottom: '0.5rem' }}>Brand Partner</h3>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <img 
@@ -137,7 +138,7 @@ export default function CollaborationDetailPage() {
             </div>
           </div>
 
-          <div className="card" style={{ padding: '2rem' }}>
+          <div className="card" style={{ padding: 'clamp(1rem, 4vw, 2rem)' }}>
             <h3 style={{ marginTop: 0, marginBottom: '1.5rem', borderBottom: '1px solid var(--color-border)', paddingBottom: '0.5rem' }}>Creator Partner</h3>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <img 
@@ -156,6 +157,12 @@ export default function CollaborationDetailPage() {
           </div>
         </div>
       </div>
+
+      <DeliverablesSection 
+        collaborationId={collaboration.id}
+        collaborationStatus={collaboration.status}
+        currentUserRole={isBrandOwner ? 'BRAND' : isCreator ? 'CREATOR' : null}
+      />
     </div>
   );
 }

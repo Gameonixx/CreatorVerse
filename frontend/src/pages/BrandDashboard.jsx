@@ -186,6 +186,22 @@ export default function BrandDashboard() {
             <div style={{ display: 'grid', gap: '1.5rem' }}>
               {applications.map(app => (
                 <div key={app.id} className="card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', background: 'var(--color-surface)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}>
+                    <span style={{ 
+                      fontWeight: 'bold', 
+                      marginRight: '1rem',
+                      fontSize: '0.85rem',
+                      padding: '0.25rem 0.75rem',
+                      borderRadius: '20px',
+                      background: app.status === 'PENDING' ? '#fff8e1' : app.status === 'ACCEPTED' ? '#e8f5e9' : '#ffebee',
+                      color: app.status === 'PENDING' ? '#f57c00' : app.status === 'ACCEPTED' ? '#2e7d32' : '#c62828',
+                      border: `1px solid ${app.status === 'PENDING' ? '#ffe082' : app.status === 'ACCEPTED' ? '#a5d6a7' : '#ef9a9a'}`,
+                      whiteSpace: 'nowrap'
+                    }}>
+                      {app.status}
+                    </span>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Applied: {new Date(app.createdAt).toLocaleDateString()}</span>
+                  </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', minWidth: 0, flex: 1 }}>
                       <img src={app.creatorAvatarUrl || `https://ui-avatars.com/api/?name=${app.creatorName}&background=random`} alt={app.creatorName} style={{ width: '56px', height: '56px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--color-border)' }} />
@@ -197,18 +213,6 @@ export default function BrandDashboard() {
                           Followers: {app.creatorFollowerCount?.toLocaleString() || 0} &nbsp;&bull;&nbsp; Engagement: {app.creatorEngagementRate ? app.creatorEngagementRate + '%' : 'N/A'}
                         </div>
                       </div>
-                    </div>
-                    <div style={{ 
-                      fontWeight: 'bold', 
-                      fontSize: '0.85rem',
-                      padding: '0.25rem 0.75rem',
-                      borderRadius: '20px',
-                      background: app.status === 'PENDING' ? '#fff8e1' : app.status === 'ACCEPTED' ? '#e8f5e9' : '#ffebee',
-                      color: app.status === 'PENDING' ? '#f57c00' : app.status === 'ACCEPTED' ? '#2e7d32' : '#c62828',
-                      border: `1px solid ${app.status === 'PENDING' ? '#ffe082' : app.status === 'ACCEPTED' ? '#a5d6a7' : '#ef9a9a'}`,
-                      whiteSpace: 'nowrap'
-                    }}>
-                      {app.status}
                     </div>
                   </div>
                   
@@ -222,9 +226,12 @@ export default function BrandDashboard() {
                         <button className="btn" style={{ background: '#ff4444', color: 'white', border: '1px solid #d32f2f', padding: '0.5rem 1rem', flex: '1 1 auto' }} onClick={() => handleReview(app.id, 'REJECTED')}>Reject</button>
                       </>
                     )}
-                    {app.status === 'ACCEPTED' && (
-                      <button className="btn primary" style={{ padding: '0.5rem 1rem', flex: '1 1 auto' }}>Message</button>
-                    )}
+                    {app.status === 'ACCEPTED' && (() => {
+                      const relatedCollab = collaborations.find(c => c.originatingApplicationId === app.id);
+                      return relatedCollab ? (
+                        <Link to={`/collaborations/${relatedCollab.id}`} className="btn primary" style={{ padding: '0.5rem 1rem', flex: '1 1 auto', textAlign: 'center' }}>View Collaboration</Link>
+                      ) : null;
+                    })()}
                   </div>
                 </div>
               ))}
