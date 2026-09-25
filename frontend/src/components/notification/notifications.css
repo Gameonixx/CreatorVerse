@@ -7,7 +7,7 @@
 .notification-trigger {
   background: none;
   border: none;
-  color: var(--text-muted);
+  color: var(--color-text-secondary);
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 50%;
@@ -20,8 +20,8 @@
 
 .notification-trigger:hover,
 .notification-trigger.active {
-  color: var(--text-bright);
-  background-color: var(--surface-2);
+  color: var(--color-text-primary);
+  background-color: var(--color-accent);
 }
 
 .notification-trigger svg {
@@ -33,7 +33,7 @@
   position: absolute;
   top: 2px;
   right: 2px;
-  background-color: var(--primary);
+  background-color: #ff4444; /* red badge */
   color: white;
   font-size: 0.65rem;
   font-weight: 700;
@@ -44,7 +44,7 @@
   align-items: center;
   justify-content: center;
   padding: 0 4px;
-  border: 2px solid var(--surface-1);
+  border: 2px solid var(--color-bg); /* ensure border contrast */
 }
 
 .notification-dropdown {
@@ -59,7 +59,8 @@
   z-index: 100;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
 }
 
 @media (max-width: 768px) {
@@ -77,9 +78,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem;
-  border-bottom: 1px solid var(--border-color);
-  background-color: var(--surface-2);
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  gap: 0.5rem;
 }
 
 .notification-header h3 {
@@ -89,16 +91,32 @@
 }
 
 .mark-all-btn {
-  background: none;
-  border: none;
-  color: var(--primary);
-  font-size: 0.85rem;
+  background-color: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  box-shadow: 2px 2px 0 var(--color-border);
+  border-radius: 6px;
+  color: var(--color-text-primary);
+  font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
+  padding: 0.35rem 0.5rem;
+  width: auto;
+  min-width: 0;
+  height: auto;
+  line-height: 1.2;
+  text-align: center;
+  white-space: normal;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.2s;
 }
 
 .mark-all-btn:hover {
-  text-decoration: underline;
+  background-color: var(--color-bg);
+  text-decoration: none;
+}
+
+.mark-all-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 var(--color-border);
 }
 
 .notification-list {
@@ -110,14 +128,13 @@
   display: flex;
   align-items: flex-start;
   padding: 1rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--color-border);
   cursor: pointer;
   transition: background-color 0.2s;
   position: relative;
 }
-
 .notification-item:hover {
-  background-color: var(--surface-2);
+  background-color: var(--color-accent);
 }
 
 .notification-item.unread {
@@ -134,27 +151,24 @@
 
 .notification-content h4 {
   margin: 0 0 0.25rem 0;
-  font-size: 0.95rem;
-  color: var(--text-bright);
+  color: var(--color-text-primary);
 }
 
 .notification-content p {
   margin: 0 0 0.5rem 0;
-  font-size: 0.85rem;
-  color: var(--text-muted);
+  color: var(--color-text-secondary);
   line-height: 1.4;
 }
 
 .notification-time {
-  font-size: 0.75rem;
-  color: var(--text-dim);
+  color: var(--color-text-secondary);
 }
 
 .notification-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: var(--primary);
+  background-color: #ff4444;
   margin-top: 6px;
   flex-shrink: 0;
   margin-left: 0.5rem;
@@ -162,6 +176,5 @@
 
 .notification-empty {
   padding: 2rem;
-  text-align: center;
-  color: var(--text-muted);
+  color: var(--color-text-secondary);
 }
