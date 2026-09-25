@@ -9,7 +9,7 @@ export default function UserProfilePage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user, refreshProfileModes, hasCreatorMode, hasBrandMode } = useAuth();
-  
+
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,7 +17,7 @@ export default function UserProfilePage() {
   const [hasCreatorProfile, setHasCreatorProfile] = useState(false);
   const [hasBrandProfile, setHasBrandProfile] = useState(false);
   const [upgrading, setUpgrading] = useState(false);
-  
+
   const [showBrandForm, setShowBrandForm] = useState(false);
   const [brandForm, setBrandForm] = useState({ companyName: '', industry: '', description: '', websiteUrl: '' });
 
@@ -25,10 +25,10 @@ export default function UserProfilePage() {
     try {
       setLoading(true);
       setError(null);
-      
+
       // 1. Fetch standard public user info
       const userData = await api.get(`/users/public/${id}`);
-      
+
       // 2. Attempt to fetch creator profile info
       let creatorData = null;
       try {
@@ -37,7 +37,7 @@ export default function UserProfilePage() {
       } catch (err) {
         setHasCreatorProfile(false);
       }
-      
+
       // 3. Attempt to fetch brand profile info
       let brandData = null;
       try {
@@ -46,7 +46,7 @@ export default function UserProfilePage() {
       } catch (err) {
         setHasBrandProfile(false);
       }
-      
+
       // Merge data (note: overlapping fields might need care, but for now we merge)
       setProfile({ ...userData, ...creatorData, ...brandData });
     } catch (err) {
@@ -145,7 +145,7 @@ export default function UserProfilePage() {
   return (
     <div className="creator-profile-page">
       <div className="creator-profile-actions">
-        <button className="btn back-btn" onClick={handleBack} style={{ background: 'transparent', padding: '0.5rem', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} aria-label="Go Back">
+        <button className="btn back-btn" onClick={handleBack} aria-label="Go Back">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M19 12H5M12 19l-7-7 7-7"/>
           </svg>
@@ -166,9 +166,9 @@ export default function UserProfilePage() {
 
       {!loading && !error && profile && (
         <>
-          <UserProfileHeader 
-            profileData={profile} 
-            displayName={displayName || profile.displayName || profile.username} 
+          <UserProfileHeader
+            profileData={profile}
+            displayName={displayName || profile.displayName || profile.username}
             onFollowChange={handleFollowChange}
             isOwnProfile={isOwnProfile}
             hasCreatorProfile={isOwnProfile ? hasCreatorMode : hasCreatorProfile}
@@ -178,7 +178,7 @@ export default function UserProfilePage() {
             onActivateBrand={() => setShowBrandForm(true)}
             onDeactivateBrand={handleDeactivateBrand}
           />
-          
+
           {showBrandForm && !hasBrandProfile && (
             <div className="brand-activation-form card" style={{ maxWidth: '600px', margin: '0 auto 2rem auto', padding: '1.5rem' }}>
               <h3 style={{ marginTop: '0', marginBottom: '1rem', fontSize: '1.1rem' }}>Activate Brand Mode</h3>
@@ -209,9 +209,9 @@ export default function UserProfilePage() {
         </>
       )}
 
-      <UserContentGrid 
-        userId={id} 
-        onDisplayNameDiscovered={setDisplayName} 
+      <UserContentGrid
+        userId={id}
+        onDisplayNameDiscovered={setDisplayName}
       />
     </div>
   );

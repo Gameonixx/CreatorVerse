@@ -46,11 +46,11 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('token', response.accessToken);
         // Temporarily, we extract the username from credentials to set simple user obj
         // In the future, this would come from the JWT claims or a /me endpoint.
-        const userObj = { 
+        const userObj = {
           id: response.userId,
-          username: credentials.usernameOrEmail, 
-          role: 'USER' 
-        }; 
+          username: credentials.usernameOrEmail,
+          role: 'USER'
+        };
         setUser(userObj);
         localStorage.setItem('user', JSON.stringify(userObj));
         await checkProfileModes(response.userId);
@@ -87,7 +87,7 @@ export const AuthProvider = ({ children }) => {
     } catch {
       setHasCreatorMode(false);
     }
-    
+
     try {
       await api.get(`/brands/profile/${userId}`);
       setHasBrandMode(true);
@@ -102,8 +102,21 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const refreshUser = async () => {
+    if (token) {
+      try {
+        const response = await api.get('/users/me');
+        setUser(response);
+        localStorage.setItem('user', JSON.stringify(response));
+        await checkProfileModes(response.id);
+      } catch (err) {
+        console.error("Failed to refresh user profile", err);
+      }
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, hasCreatorMode, hasBrandMode, refreshProfileModes, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ user, token, hasCreatorMode, hasBrandMode, refreshProfileModes, refreshUser, login, register, logout, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );

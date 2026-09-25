@@ -14,9 +14,26 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem; /* reduced from 1rem */
   gap: 1rem;
   flex-wrap: wrap;
+}
+
+.creator-profile-actions .back-btn {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-primary);
+  border-radius: 0;
+}
+.creator-profile-actions .back-btn:active {
+  transform: none;
+  box-shadow: none;
 }
 
 .creator-action-buttons {
@@ -44,10 +61,10 @@
 
 .creator-name {
   font-family: var(--font-heading);
-  font-size: 2.5rem;
+  font-size: 2rem; /* reduced from 2.5rem */
   font-weight: 800;
-  color: var(--color-text);
-  margin-bottom: 0.5rem;
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
   text-transform: uppercase;
   letter-spacing: -0.02em;
   word-wrap: break-word;
@@ -55,24 +72,24 @@
 
 .creator-niche {
   display: inline-block;
-  font-size: 0.875rem;
+  font-size: 0.75rem; /* reduced from 0.875rem */
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   background-color: var(--color-accent);
-  color: var(--color-text);
-  padding: 0.25rem 0.75rem;
-  border: 2px solid var(--color-border);
+  color: var(--color-text-primary);
+  padding: 0.15rem 0.5rem; /* reduced padding */
+  border: 1px solid var(--color-border); /* reduced border */
   border-radius: 4px;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem; /* reduced from 1.5rem */
 }
 
 .creator-bio {
-  font-size: 1.125rem;
-  line-height: 1.6;
-  color: var(--color-text-light);
+  font-size: 1rem; /* adjusted for better proportion */
+  line-height: 1.5;
+  color: var(--color-text-secondary);
   max-width: 600px;
-  margin: 0 auto 2rem auto;
+  margin: 0 auto 1.5rem auto;
 }
 
 .creator-stats {
@@ -93,7 +110,7 @@
   font-family: var(--font-heading);
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--color-text);
+  color: var(--color-text-primary);
 }
 
 .stat-label {
@@ -101,7 +118,7 @@
   text-transform: uppercase;
   font-weight: 600;
   letter-spacing: 0.05em;
-  color: var(--color-text-light);
+  color: var(--color-text-secondary);
   margin-top: 0.25rem;
 }
 
@@ -125,7 +142,7 @@
 .creator-content-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 .creator-load-more {
@@ -147,7 +164,7 @@
 }
 
 .creator-error {
-  color: var(--color-error, #d32f2f);
+  color: #ff4444;
   border-style: solid;
 }
 
@@ -159,14 +176,20 @@
 }
 
 @media (max-width: 480px) {
+  .creator-profile-page {
+    padding: 0.5rem 0.5rem 6rem 0.5rem; /* much less empty space, wider card */
+  }
+
   .creator-profile-actions {
     flex-direction: column;
     align-items: stretch;
-    gap: 0.75rem;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
   }
-  
+
   .creator-profile-actions .back-btn {
     align-self: flex-start;
+    padding: 0.25rem; /* tighten padding on mobile */
   }
 
   .creator-action-buttons {
@@ -182,23 +205,22 @@
     white-space: nowrap;
   }
 
-  .creator-profile-page {
-    padding-top: 1rem;
-  }
-
   .creator-profile-header {
-    padding: 1.5rem 1rem;
+    padding: 1.5rem 0.75rem; /* tighter inner padding to let content breathe */
+    margin-bottom: 1.5rem;
   }
 
   .creator-name {
-    font-size: 2rem;
+    font-size: 1.5rem; /* much smaller on mobile */
   }
 
   .creator-bio {
-    font-size: 1rem;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
   }
 
   .creator-stats {
     gap: 1rem;
+    padding-top: 1rem;
   }
 }

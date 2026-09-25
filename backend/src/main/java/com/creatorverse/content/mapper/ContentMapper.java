@@ -17,6 +17,7 @@ public class ContentMapper {
         response.setId(content.getId());
         response.setCreatorId(content.getCreator().getId());
         response.setCreatorDisplayName(content.getCreator().getDisplayName());
+        response.setCreatorAvatarUrl(content.getCreator().getAvatarUrl());
         response.setTitle(content.getTitle());
         response.setCaption(content.getCaption());
         response.setContentType(content.getContentType());

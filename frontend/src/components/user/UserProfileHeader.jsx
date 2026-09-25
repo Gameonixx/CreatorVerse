@@ -3,11 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import FollowButton from '../social/FollowButton';
 import UserListModal from '../social/UserListModal';
 import { api } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
-export default function UserProfileHeader({ 
-  profileData, 
-  displayName, 
-  onFollowChange, 
+export default function UserProfileHeader({
+  profileData,
+  displayName,
+  onFollowChange,
   isOwnProfile,
   hasCreatorProfile,
   hasBrandProfile,
@@ -17,12 +18,15 @@ export default function UserProfileHeader({
   onDeactivateBrand
 }) {
   const navigate = useNavigate();
+  const { refreshUser } = useAuth();
   const [modalState, setModalState] = useState({ isOpen: false, type: 'followers' });
   const [isEditingBio, setIsEditingBio] = useState(false);
   const [editBioText, setEditBioText] = useState('');
   const [isSavingBio, setIsSavingBio] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const menuRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -41,7 +45,7 @@ export default function UserProfileHeader({
   const nameToDisplay = displayName || 'Creator Profile';
 
   const openFollowers = () => setModalState({ isOpen: true, type: 'followers' });
-  
+
   // Assuming there's no followingCount provided currently, we only implement Followers.
   // If followingCount becomes available in the future, it can be added identically.
 
@@ -70,41 +74,84 @@ export default function UserProfileHeader({
     setEditBioText(bio || '');
   };
 
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      setIsUploadingAvatar(true);
+
+      // 1. Upload the image to Cloudinary using the Content endpoint (as draft/private)
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const metadata = {
+        title: 'Avatar Upload',
+        caption: 'Profile Avatar',
+        contentType: 'IMAGE',
+        visibility: 'PRIVATE'
+      };
+      formData.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+      formData.append('publishNow', 'false');
+
+      const contentResponse = await api.post('/content', formData);
+      const mediaUrl = contentResponse.mediaUrl;
+
+      // 2. Update the user's avatarUrl
+      await api.put(`/users/${targetUserId}`, { avatarUrl: mediaUrl });
+
+      // 3. Optimistic update and refresh global auth state
+      profileData.avatarUrl = mediaUrl;
+      if (refreshUser) {
+        await refreshUser();
+      }
+    } catch (err) {
+      alert('Failed to upload avatar: ' + (err.message || 'Unknown error'));
+      console.error(err);
+    } finally {
+      setIsUploadingAvatar(false);
+      // Reset input so the same file can be selected again
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
   return (
     <header className="creator-profile-header" style={{ position: 'relative' }}>
-      
+
       {isOwnProfile && (
         <div className="profile-actions-menu" ref={menuRef} style={{ position: 'absolute', top: '0', right: '0' }}>
-          <button 
-            className="btn icon-btn" 
-            onClick={() => setIsMenuOpen(!isMenuOpen)} 
+          <button
+            className="btn icon-btn"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="More profile actions"
-            style={{ background: 'transparent', border: 'none', fontSize: '1.5rem', padding: '0.2rem 0.5rem', cursor: 'pointer', color: 'var(--text-secondary)' }}
+            style={{ background: 'transparent', border: 'none', boxShadow: 'none', fontSize: '1.5rem', padding: '0.2rem 0.5rem', cursor: 'pointer', color: 'var(--text-secondary)' }}
           >
             ⋮
           </button>
-          
+
           {isMenuOpen && (
             <div className="card" style={{ position: 'absolute', top: '100%', right: '0', zIndex: 10, minWidth: '220px', padding: '0.5rem 0', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
               <div style={{ padding: '0.5rem 1rem', fontSize: '0.8rem', fontWeight: 'bold', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Professional
               </div>
               <hr style={{ margin: '0.25rem 0', border: 'none', borderTop: '1px solid var(--border-color)' }} />
-              
+
               {!hasCreatorProfile && (
                  <button className="menu-item text-left" style={{ width: '100%', background: 'none', border: 'none', padding: '0.75rem 1rem', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.95rem' }} onClick={() => { onActivateCreator(); setIsMenuOpen(false); }}>Activate Creator Mode</button>
               )}
               {hasCreatorProfile && (
                  <button className="menu-item text-left" style={{ width: '100%', background: 'none', border: 'none', padding: '0.75rem 1rem', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.95rem' }} onClick={() => { navigate('/dashboard/creator'); setIsMenuOpen(false); }}>Creator Dashboard</button>
               )}
-              
+
               {!hasBrandProfile && (
                  <button className="menu-item text-left" style={{ width: '100%', background: 'none', border: 'none', padding: '0.75rem 1rem', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.95rem' }} onClick={() => { onActivateBrand(); setIsMenuOpen(false); }}>Activate Brand Mode</button>
               )}
               {hasBrandProfile && (
                  <button className="menu-item text-left" style={{ width: '100%', background: 'none', border: 'none', padding: '0.75rem 1rem', cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.95rem' }} onClick={() => { navigate('/dashboard/brand'); setIsMenuOpen(false); }}>Brand Dashboard</button>
               )}
-              
+
               {(hasCreatorProfile || hasBrandProfile) && (
                 <>
                   <hr style={{ margin: '0.5rem 0', border: 'none', borderTop: '1px solid var(--border-color)' }} />
@@ -122,25 +169,72 @@ export default function UserProfileHeader({
       )}
 
       <h1 className="creator-name">{nameToDisplay}</h1>
-      
+
       {niche && (
         <div className="creator-niche" style={{ marginBottom: '0.5rem' }}>
           {niche}
         </div>
       )}
-      
+
       {companyName && (
         <div className="brand-metadata" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '1rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
           <div style={{ fontWeight: 'bold' }}>{companyName} {industry ? `• ${industry}` : ''}</div>
           {websiteUrl && <a href={websiteUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--accent-primary)' }}>{websiteUrl}</a>}
         </div>
       )}
-      
+
+      {/* Avatar Section */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '1rem', position: 'relative' }}>
+        <div
+          className="profile-avatar-container"
+          style={{
+            width: '120px', height: '120px', borderRadius: '50%',
+            backgroundColor: 'var(--color-accent)', border: '4px solid var(--color-border)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
+            boxShadow: 'var(--shadow-brutal)', position: 'relative',
+            cursor: isOwnProfile ? 'pointer' : 'default'
+          }}
+          onClick={() => {
+            if (isOwnProfile && fileInputRef.current) {
+              fileInputRef.current.click();
+            }
+          }}
+        >
+          {profileData.avatarUrl ? (
+            <img src={profileData.avatarUrl} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+            <span style={{ fontSize: '3rem', fontWeight: 'bold', color: 'var(--color-text-primary)' }}>
+              {nameToDisplay.charAt(0).toUpperCase()}
+            </span>
+          )}
+
+          {isOwnProfile && (
+            <div style={{
+              position: 'absolute', bottom: 0, left: 0, right: 0, background: 'rgba(0,0,0,0.5)',
+              color: 'white', fontSize: '0.75rem', textAlign: 'center', padding: '0.2rem 0',
+              fontWeight: 'bold'
+            }}>
+              {isUploadingAvatar ? 'Uploading...' : 'Edit'}
+            </div>
+          )}
+        </div>
+
+        {isOwnProfile && (
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleAvatarUpload}
+            style={{ display: 'none' }}
+            accept="image/*"
+          />
+        )}
+      </div>
+
       {isOwnProfile && isEditingBio ? (
         <div className="creator-bio-edit" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', marginBottom: '1rem' }}>
-          <textarea 
-            value={editBioText} 
-            onChange={(e) => setEditBioText(e.target.value)} 
+          <textarea
+            value={editBioText}
+            onChange={(e) => setEditBioText(e.target.value)}
             placeholder="Write a bio..."
             maxLength={500}
             rows={3}
@@ -171,8 +265,8 @@ export default function UserProfileHeader({
       )}
 
       <div className="creator-stats">
-        <div 
-          className="stat-item" 
+        <div
+          className="stat-item"
           onClick={openFollowers}
           style={{ cursor: 'pointer', transition: 'transform 0.1s ease' }}
           onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
@@ -191,15 +285,15 @@ export default function UserProfileHeader({
       </div>
 
       {!isOwnProfile && (
-        <FollowButton 
-          userId={targetUserId} 
-          isFollowed={isFollowedByCurrentUser} 
-          onFollowChange={onFollowChange} 
+        <FollowButton
+          userId={targetUserId}
+          isFollowed={isFollowedByCurrentUser}
+          onFollowChange={onFollowChange}
         />
       )}
 
-      <UserListModal 
-        userId={targetUserId} 
+      <UserListModal
+        userId={targetUserId}
         type={modalState.type}
         isOpen={modalState.isOpen}
         onClose={closeModal}

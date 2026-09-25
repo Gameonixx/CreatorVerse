@@ -8,6 +8,7 @@ export default function ContentCard({ content }) {
     id,
     creatorId,
     creatorDisplayName,
+    creatorAvatarUrl,
     title,
     caption,
     contentType,
@@ -41,21 +42,21 @@ export default function ContentCard({ content }) {
 
     if (contentType === 'IMAGE') {
       return (
-        <img 
-          src={mediaUrl} 
-          alt={title} 
+        <img
+          src={mediaUrl}
+          alt={title}
           className="content-card-media-image"
-          loading="lazy" 
+          loading="lazy"
         />
       );
     }
-    
+
     if (contentType === 'VIDEO') {
       return (
-        <video 
-          src={mediaUrl} 
-          className="content-card-media-video" 
-          controls 
+        <video
+          src={mediaUrl}
+          className="content-card-media-video"
+          controls
           preload="metadata"
         />
       );
@@ -70,12 +71,16 @@ export default function ContentCard({ content }) {
 
   return (
     <article className="content-card" style={{ padding: '1rem', border: '2px solid var(--color-border)', borderRadius: '12px', background: 'var(--color-surface)', boxShadow: 'var(--shadow-brutal)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-      
+
       {/* 1. Header (Creator Identity & Date) */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Link to={`/user/${creatorId}`} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none', color: 'inherit', minWidth: 0 }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#fcdcb4', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '1rem', flexShrink: 0, border: '1px solid var(--color-border)' }}>
-            {initials}
+          <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'var(--color-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '1rem', flexShrink: 0, border: '1px solid var(--color-border)', overflow: 'hidden' }}>
+            {creatorAvatarUrl ? (
+              <img src={creatorAvatarUrl} alt={creatorDisplayName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              initials
+            )}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             <span style={{ fontWeight: 'bold', fontSize: '1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{creatorDisplayName || 'Unknown Creator'}</span>
@@ -107,12 +112,12 @@ export default function ContentCard({ content }) {
       {/* 4. Engagement Controls */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.25rem' }}>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <LikeButton 
-            contentId={id} 
-            initialLikeCount={likeCount} 
-            initialIsLiked={isLikedByCurrentUser} 
+          <LikeButton
+            contentId={id}
+            initialLikeCount={likeCount}
+            initialIsLiked={isLikedByCurrentUser}
           />
-          <button 
+          <button
             onClick={() => setShowComments(!showComments)}
             style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: 'var(--color-text-primary)', background: 'none', border: 'none', padding: '0', cursor: 'pointer', boxShadow: 'none' }}
             aria-label="Toggle Comments"
@@ -123,9 +128,9 @@ export default function ContentCard({ content }) {
             <span style={{ fontSize: '0.9rem', fontWeight: '500' }}>{commentCount || 0}</span>
           </button>
         </div>
-        
+
         <div style={{ position: 'relative' }}>
-          <button 
+          <button
             onClick={() => setShowMenu(!showMenu)}
             style={{ background: 'none', border: 'none', padding: '0.25rem', cursor: 'pointer', color: 'var(--color-text-primary)', boxShadow: 'none' }}
             aria-label="More Options"
@@ -136,13 +141,13 @@ export default function ContentCard({ content }) {
               <circle cx="12" cy="19" r="1"></circle>
             </svg>
           </button>
-          
+
           {showMenu && (
             <div style={{ position: 'absolute', bottom: '100%', right: '0', marginBottom: '0.5rem', background: 'var(--color-surface)', border: '2px solid var(--color-border)', borderRadius: '8px', padding: '0.5rem 0', display: 'flex', flexDirection: 'column', minWidth: '150px', zIndex: 10, boxShadow: 'var(--shadow-brutal)' }}>
               <Link to={`/user/${creatorId}`} style={{ padding: '0.5rem 1rem', textDecoration: 'none', color: 'var(--color-text-primary)', fontSize: '0.9rem', fontWeight: 600, display: 'block' }}>
                 View Profile
               </Link>
-              <button 
+              <button
                 onClick={() => {
                   navigator.clipboard.writeText(window.location.origin + '/content/' + id);
                   setShowMenu(false);
