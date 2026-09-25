@@ -26,15 +26,18 @@ public class CampaignApplicationService {
     private final CampaignRepository campaignRepository;
     private final CreatorProfileRepository creatorProfileRepository;
     private final CollaborationService collaborationService;
+    private final org.springframework.context.ApplicationEventPublisher eventPublisher;
 
     public CampaignApplicationService(CampaignApplicationRepository applicationRepository,
                                       CampaignRepository campaignRepository,
                                       CreatorProfileRepository creatorProfileRepository,
-                                      CollaborationService collaborationService) {
+                                      CollaborationService collaborationService,
+                                      org.springframework.context.ApplicationEventPublisher eventPublisher) {
         this.applicationRepository = applicationRepository;
         this.campaignRepository = campaignRepository;
         this.creatorProfileRepository = creatorProfileRepository;
         this.collaborationService = collaborationService;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
@@ -111,9 +114,22 @@ public class CampaignApplicationService {
         application.setStatus(request.getStatus());
         CampaignApplication saved = applicationRepository.save(application);
 
+        Long referenceId = campaignId;
+        com.creatorverse.notification.entity.enums.ReferenceType refType = com.creatorverse.notification.entity.enums.ReferenceType.CAMPAIGN;
+
         if (saved.getStatus() == ApplicationStatus.ACCEPTED) {
-            collaborationService.createCollaboration(saved);
+            com.creatorverse.collaboration.entity.Collaboration collab = collaborationService.createCollaboration(saved);
+            referenceId = collab.getId();
+            refType = com.creatorverse.notification.entity.enums.ReferenceType.COLLABORATION;
         }
+
+        eventPublisher.publishEvent(new com.creatorverse.notification.event.ApplicationStatusChangedEvent(
+                saved.getCreatorUser().getId(),
+                campaign.getTitle(),
+                saved.getStatus() == ApplicationStatus.ACCEPTED,
+                refType,
+                referenceId
+        ));
 
         CreatorProfile profile = creatorProfileRepository.findByUserId(saved.getCreatorUser().getId()).orElse(null);
         return mapToResponse(saved, profile);

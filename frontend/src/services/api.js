@@ -100,3 +100,10 @@ export const collaborationApi = {
   sendMessage: (id, content) => api.post(`/collaborations/${id}/messages`, { content }),
   markMessagesAsRead: (id) => api.put(`/collaborations/${id}/messages/read`, {}),
 };
+
+export const notificationApi = {
+  getNotifications: (page = 0, size = 20) => api.get(`/notifications?page=${page}&size=${size}`),
+  getUnreadCount: () => api.get('/notifications/unread-count'),
+  markAsRead: (id) => api.post(`/notifications/${id}/read`, {}),
+  markAllAsRead: () => api.post('/notifications/read-all', {}),
+};

@@ -39,6 +39,9 @@ public class CampaignApplicationServiceTest {
     @Mock
     private CollaborationService collaborationService;
 
+    @Mock
+    private org.springframework.context.ApplicationEventPublisher eventPublisher;
+
     @InjectMocks
     private CampaignApplicationService applicationService;
 
@@ -112,6 +115,11 @@ public class CampaignApplicationServiceTest {
         when(campaignRepository.findById(10L)).thenReturn(Optional.of(campaign));
         when(applicationRepository.findById(100L)).thenReturn(Optional.of(app));
         when(applicationRepository.save(any(CampaignApplication.class))).thenAnswer(i -> i.getArgument(0));
+        when(collaborationService.createCollaboration(any(CampaignApplication.class))).thenAnswer(i -> {
+            com.creatorverse.collaboration.entity.Collaboration collab = new com.creatorverse.collaboration.entity.Collaboration();
+            collab.setId(101L);
+            return collab;
+        });
 
         applicationService.reviewApplication(1L, 10L, 100L, req);
 

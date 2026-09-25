@@ -35,6 +35,9 @@ class CommentServiceTest {
     @Mock
     private ContentRepository contentRepository;
 
+    @Mock
+    private org.springframework.context.ApplicationEventPublisher eventPublisher;
+
     @InjectMocks
     private CommentService commentService;
 
@@ -59,6 +62,7 @@ class CommentServiceTest {
 
         content = new Content();
         content.setId(10L);
+        content.setCreator(otherUser);
 
         comment = new Comment();
         comment.setId(100L);

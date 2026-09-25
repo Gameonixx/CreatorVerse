@@ -22,11 +22,16 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final ContentRepository contentRepository;
+    private final org.springframework.context.ApplicationEventPublisher eventPublisher;
 
-    public CommentService(CommentRepository commentRepository, UserRepository userRepository, ContentRepository contentRepository) {
+    public CommentService(CommentRepository commentRepository, 
+                          UserRepository userRepository, 
+                          ContentRepository contentRepository,
+                          org.springframework.context.ApplicationEventPublisher eventPublisher) {
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
         this.contentRepository = contentRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
@@ -43,6 +48,17 @@ public class CommentService {
         comment.setText(request.getText());
 
         comment = commentRepository.save(comment);
+
+        if (!content.getCreator().getId().equals(user.getId())) {
+            eventPublisher.publishEvent(new com.creatorverse.notification.event.SocialEvent(
+                    content.getCreator().getId(),
+                    user.getDisplayName(),
+                    "commented on your post",
+                    com.creatorverse.notification.entity.enums.ReferenceType.CONTENT,
+                    content.getId()
+            ));
+        }
+
         return mapToResponse(comment);
     }
 

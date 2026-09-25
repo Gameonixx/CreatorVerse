@@ -44,6 +44,9 @@ class MessagingServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private org.springframework.context.ApplicationEventPublisher eventPublisher;
+
     @InjectMocks
     private MessagingService messagingService;
 

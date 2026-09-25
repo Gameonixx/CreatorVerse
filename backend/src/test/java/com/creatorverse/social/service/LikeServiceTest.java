@@ -34,6 +34,9 @@ class LikeServiceTest {
     @Mock
     private ContentRepository contentRepository;
 
+    @Mock
+    private org.springframework.context.ApplicationEventPublisher eventPublisher;
+
     @InjectMocks
     private LikeService likeService;
 
@@ -49,8 +52,12 @@ class LikeServiceTest {
         user.setId(1L);
         user.setUsername("testuser");
 
+        User contentCreator = new User();
+        contentCreator.setId(2L);
+
         content = new Content();
         content.setId(10L);
+        content.setCreator(contentCreator);
 
         contentLike = new ContentLike();
         contentLike.setId(100L);

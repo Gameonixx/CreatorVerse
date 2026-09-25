@@ -58,12 +58,18 @@ public class CampaignApplicationServiceIntegrationTest {
         }
 
         @Bean
+        public org.springframework.context.ApplicationEventPublisher applicationEventPublisher() {
+            return mock(org.springframework.context.ApplicationEventPublisher.class);
+        }
+
+        @Bean
         public CampaignApplicationService campaignApplicationService(
                 CampaignApplicationRepository applicationRepository,
                 CampaignRepository campaignRepository,
                 CreatorProfileRepository creatorProfileRepository,
-                CollaborationService collaborationService) {
-            return new CampaignApplicationService(applicationRepository, campaignRepository, creatorProfileRepository, collaborationService);
+                CollaborationService collaborationService,
+                org.springframework.context.ApplicationEventPublisher eventPublisher) {
+            return new CampaignApplicationService(applicationRepository, campaignRepository, creatorProfileRepository, collaborationService, eventPublisher);
         }
     }
 

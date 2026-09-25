@@ -21,10 +21,14 @@ public class FollowService {
 
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
+    private final org.springframework.context.ApplicationEventPublisher eventPublisher;
+    
     public FollowService(FollowRepository followRepository, 
-                         UserRepository userRepository) {
+                         UserRepository userRepository,
+                         org.springframework.context.ApplicationEventPublisher eventPublisher) {
         this.followRepository = followRepository;
         this.userRepository = userRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
@@ -53,6 +57,13 @@ public class FollowService {
         userRepository.save(following);
         userRepository.save(follower);
 
+        eventPublisher.publishEvent(new com.creatorverse.notification.event.SocialEvent(
+                following.getId(),
+                follower.getDisplayName(),
+                "started following you",
+                com.creatorverse.notification.entity.enums.ReferenceType.USER,
+                follower.getId()
+        ));
 
         return mapToResponse(follow);
     }

@@ -27,15 +27,18 @@ public class MessagingService {
     private final MessageRepository messageRepository;
     private final CollaborationRepository collaborationRepository;
     private final UserRepository userRepository;
+    private final org.springframework.context.ApplicationEventPublisher eventPublisher;
 
     public MessagingService(ConversationRepository conversationRepository,
                             MessageRepository messageRepository,
                             CollaborationRepository collaborationRepository,
-                            UserRepository userRepository) {
+                            UserRepository userRepository,
+                            org.springframework.context.ApplicationEventPublisher eventPublisher) {
         this.conversationRepository = conversationRepository;
         this.messageRepository = messageRepository;
         this.collaborationRepository = collaborationRepository;
         this.userRepository = userRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     private Collaboration getAuthorizedCollaboration(Long collaborationId, Long currentUserId) {
@@ -117,6 +120,16 @@ public class MessagingService {
         message.setContent(content.trim());
 
         Message saved = messageRepository.save(message);
+
+        Long recipientId = collaboration.getCreatorUser().getId().equals(currentUserId) 
+                ? collaboration.getCampaign().getBrandUser().getId() 
+                : collaboration.getCreatorUser().getId();
+                
+        eventPublisher.publishEvent(new com.creatorverse.notification.event.MessageCreatedEvent(
+                recipientId,
+                sender.getDisplayName(),
+                collaborationId
+        ));
 
         return mapToMessageResponse(saved);
     }

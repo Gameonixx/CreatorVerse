@@ -31,6 +31,9 @@ class FollowServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private org.springframework.context.ApplicationEventPublisher eventPublisher;
+
     @InjectMocks
     private FollowService followService;
 

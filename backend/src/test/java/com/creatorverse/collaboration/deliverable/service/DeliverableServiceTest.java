@@ -32,6 +32,9 @@ class DeliverableServiceTest {
     @Mock
     private CollaborationRepository collaborationRepository;
 
+    @Mock
+    private org.springframework.context.ApplicationEventPublisher eventPublisher;
+
     @InjectMocks
     private DeliverableService deliverableService;
 

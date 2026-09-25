@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import NotificationDropdown from '../notification/NotificationDropdown';
 
 export default function Navbar() {
   const { user, logout, hasCreatorMode, hasBrandMode } = useAuth();
@@ -52,6 +53,12 @@ export default function Navbar() {
             <span className="nav-text">Campaigns</span>
           </NavLink>
           
+          {user && (
+            <div className="mobile-only-nav" style={{ display: 'flex', alignItems: 'center' }}>
+              <NotificationDropdown />
+            </div>
+          )}
+
           <button className={`nav-link mobile-only-nav ${isMoreMenuOpen ? 'active' : ''}`} onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)} aria-label="More" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
             <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/><circle cx="5" cy="12" r="1.5"/>
@@ -88,6 +95,8 @@ export default function Navbar() {
                   )}
                 </div>
               )}
+              
+              <NotificationDropdown />
               
               <button onClick={handleLogout} className="btn">Log Out</button>
             </>

@@ -18,10 +18,14 @@ public class DeliverableService {
 
     private final DeliverableRepository deliverableRepository;
     private final CollaborationRepository collaborationRepository;
+    private final org.springframework.context.ApplicationEventPublisher eventPublisher;
 
-    public DeliverableService(DeliverableRepository deliverableRepository, CollaborationRepository collaborationRepository) {
+    public DeliverableService(DeliverableRepository deliverableRepository, 
+                              CollaborationRepository collaborationRepository,
+                              org.springframework.context.ApplicationEventPublisher eventPublisher) {
         this.deliverableRepository = deliverableRepository;
         this.collaborationRepository = collaborationRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     private Collaboration getCollaborationAndValidateBrand(Long collaborationId, Long userId) {
@@ -133,7 +137,17 @@ public class DeliverableService {
         deliverable.setSubmissionUrl(request.getSubmissionUrl());
         deliverable.setStatus(DeliverableStatus.SUBMITTED);
 
-        return mapToResponse(deliverableRepository.save(deliverable));
+        Deliverable saved = deliverableRepository.save(deliverable);
+        
+        eventPublisher.publishEvent(new com.creatorverse.notification.event.DeliverableStatusChangedEvent(
+                collaboration.getCampaign().getBrandUser().getId(),
+                collaboration.getCreatorUser().getDisplayName(),
+                saved.getTitle(),
+                "submitted",
+                collaborationId
+        ));
+
+        return mapToResponse(saved);
     }
 
     @Transactional
@@ -165,7 +179,18 @@ public class DeliverableService {
 
         deliverable.setStatus(request.getStatus());
 
-        return mapToResponse(deliverableRepository.save(deliverable));
+        Deliverable saved = deliverableRepository.save(deliverable);
+
+        String action = request.getStatus() == DeliverableStatus.APPROVED ? "approved" : "rejected";
+        eventPublisher.publishEvent(new com.creatorverse.notification.event.DeliverableStatusChangedEvent(
+                collaboration.getCreatorUser().getId(),
+                collaboration.getCampaign().getBrandUser().getDisplayName(),
+                saved.getTitle(),
+                action,
+                collaborationId
+        ));
+
+        return mapToResponse(saved);
     }
 
     @Transactional(readOnly = true)
