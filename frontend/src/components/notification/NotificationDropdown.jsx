@@ -40,7 +40,7 @@ export default function NotificationDropdown() {
 
     // Route based on reference type
     if (notification.referenceType === 'COLLABORATION') {
-      navigate(`/collaboration/${notification.referenceId}`);
+      navigate(`/collaborations/${notification.referenceId}`);
     } else if (notification.referenceType === 'CAMPAIGN') {
       navigate(`/campaigns/${notification.referenceId}`);
     } else if (notification.referenceType === 'CONTENT') {

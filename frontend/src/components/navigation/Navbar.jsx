@@ -53,11 +53,7 @@ export default function Navbar() {
             <span className="nav-text">Campaigns</span>
           </NavLink>
           
-          {user && (
-            <div className="mobile-only-nav" style={{ display: 'flex', alignItems: 'center' }}>
-              <NotificationDropdown />
-            </div>
-          )}
+
 
           <button className={`nav-link mobile-only-nav ${isMoreMenuOpen ? 'active' : ''}`} onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)} aria-label="More" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
             <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -67,20 +63,20 @@ export default function Navbar() {
           </button>
         </div>
 
-        <div className="navbar-actions desktop-only">
+        <div className="navbar-actions">
           {user ? (
             <>
-              <Link to="/upload" className="btn primary">Upload</Link>
-              <Link to="/my-content" className="btn">My Content</Link>
+              <Link to="/upload" className="btn primary desktop-only">Upload</Link>
+              <Link to="/my-content" className="btn desktop-only">My Content</Link>
               
               {hasCreatorMode && !hasBrandMode && (
-                <Link to="/dashboard/creator" className="btn" title="Creator Dashboard">Creator Mode</Link>
+                <Link to="/dashboard/creator" className="btn desktop-only" title="Creator Dashboard">Creator Mode</Link>
               )}
               {!hasCreatorMode && hasBrandMode && (
-                <Link to="/dashboard/brand" className="btn" title="Brand Dashboard">Brand Mode</Link>
+                <Link to="/dashboard/brand" className="btn desktop-only" title="Brand Dashboard">Brand Mode</Link>
               )}
               {hasCreatorMode && hasBrandMode && (
-                <div style={{ position: 'relative' }}>
+                <div className="desktop-only" style={{ position: 'relative' }}>
                   <button 
                     className="btn" 
                     onClick={() => setIsContextDropdownOpen(!isContextDropdownOpen)}
@@ -98,12 +94,12 @@ export default function Navbar() {
               
               <NotificationDropdown />
               
-              <button onClick={handleLogout} className="btn">Log Out</button>
+              <button onClick={handleLogout} className="btn desktop-only">Log Out</button>
             </>
           ) : (
             <>
-              <Link to="/login" className="btn">Log In</Link>
-              <Link to="/register" className="btn primary">Sign Up</Link>
+              <Link to="/login" className="btn desktop-only">Log In</Link>
+              <Link to="/register" className="btn primary desktop-only">Sign Up</Link>
             </>
           )}
         </div>

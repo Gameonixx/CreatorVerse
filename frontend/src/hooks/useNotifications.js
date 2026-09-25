@@ -15,7 +15,7 @@ export const useNotifications = (pollingInterval = 30000) => {
     if (!user) return;
     try {
       const res = await notificationApi.getUnreadCount();
-      setUnreadCount(res.unreadCount);
+      setUnreadCount(res.count);
     } catch (err) {
       console.error('Failed to fetch unread count', err);
     }
