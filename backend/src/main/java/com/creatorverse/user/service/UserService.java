@@ -11,6 +11,9 @@ import com.creatorverse.auth.security.SecurityUtils;
 import com.creatorverse.social.repository.FollowRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import com.creatorverse.user.repository.UserSpecification;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,9 +83,18 @@ public class UserService {
         if (request.getBio() != null) {
             user.setBio(request.getBio());
         }
+        if (request.getAvatarUrl() != null) {
+            user.setAvatarUrl(request.getAvatarUrl());
+        }
 
         user = userRepository.save(user);
         return mapToResponse(user);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<UserResponse> searchUsers(String q, Pageable pageable) {
+        Page<User> users = userRepository.findAll(UserSpecification.withSearchQuery(q), pageable);
+        return users.map(this::mapToResponse);
     }
 
     @Transactional

@@ -121,4 +121,31 @@ class UserServiceTest {
             assertFalse(response.getIsFollowedByCurrentUser());
         }
     }
+
+    @Test
+    void updateUser_UpdatesAvatarUrl() {
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("testuser");
+
+        com.creatorverse.user.dto.UserUpdateRequest request = new com.creatorverse.user.dto.UserUpdateRequest();
+        request.setAvatarUrl("http://example.com/avatar.png");
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenReturn(user);
+
+        var response = userService.updateUser(1L, request);
+        org.junit.jupiter.api.Assertions.assertEquals("http://example.com/avatar.png", response.getAvatarUrl());
+        org.junit.jupiter.api.Assertions.assertEquals("http://example.com/avatar.png", user.getAvatarUrl());
+    }
+
+    @Test
+    void searchUsers_ReturnsCorrectPage() {
+        org.springframework.data.domain.Page<User> page = new org.springframework.data.domain.PageImpl<>(java.util.List.of(new User()));
+        when(userRepository.findAll(any(org.springframework.data.jpa.domain.Specification.class), any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
+
+        org.springframework.data.domain.Page<com.creatorverse.user.dto.UserResponse> result = userService.searchUsers("test", org.springframework.data.domain.PageRequest.of(0, 10));
+
+        org.junit.jupiter.api.Assertions.assertEquals(1, result.getTotalElements());
+    }
 }

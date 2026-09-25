@@ -91,4 +91,52 @@ class UserControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error").exists());
     }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = "USER")
+    void searchUsers_Success() throws Exception {
+        org.springframework.data.domain.Page<UserResponse> page = new org.springframework.data.domain.PageImpl<>(java.util.List.of(new UserResponse()));
+        Mockito.when(userService.searchUsers(any(), any())).thenReturn(page);
+
+        mockMvc.perform(get("/api/users/search?q=test"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray());
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = "USER")
+    void updateUser_OwnAvatar_Success() throws Exception {
+        com.creatorverse.user.dto.UserUpdateRequest request = new com.creatorverse.user.dto.UserUpdateRequest();
+        request.setAvatarUrl("http://example.com/avatar.png");
+
+        UserResponse mockUser = new UserResponse();
+        mockUser.setUsername("testuser");
+        mockUser.setAvatarUrl("http://example.com/avatar.png");
+
+        Mockito.when(userService.getUser(1L)).thenReturn(mockUser);
+        Mockito.when(userService.updateUser(eq(1L), any())).thenReturn(mockUser);
+
+        mockMvc.perform(put("/api/users/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.avatarUrl").value("http://example.com/avatar.png"));
+    }
+
+    @Test
+    @WithMockUser(username = "otheruser", roles = "USER")
+    void updateUser_OtherUser_Forbidden() throws Exception {
+        com.creatorverse.user.dto.UserUpdateRequest request = new com.creatorverse.user.dto.UserUpdateRequest();
+        request.setAvatarUrl("http://example.com/avatar.png");
+
+        UserResponse mockUser = new UserResponse();
+        mockUser.setUsername("testuser");
+
+        Mockito.when(userService.getUser(1L)).thenReturn(mockUser);
+
+        mockMvc.perform(put("/api/users/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
+    }
 }

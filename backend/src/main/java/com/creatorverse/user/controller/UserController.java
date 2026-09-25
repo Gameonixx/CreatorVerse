@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import com.creatorverse.auth.security.SecurityUtils;
 import com.creatorverse.common.exception.ForbiddenException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import java.util.List;
 
 @RestController
@@ -53,6 +57,15 @@ public class UserController {
         }
         UserResponse response = userService.getUserByUsername(currentUsername);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Page<UserResponse>> searchUsers(
+            @RequestParam(required = false) String q,
+            @PageableDefault(size = 20, sort = "username", direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<UserResponse> responses = userService.searchUsers(q, pageable);
+        return ResponseEntity.ok(responses);
     }
 
     @GetMapping
