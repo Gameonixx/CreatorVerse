@@ -93,4 +93,10 @@ export const collaborationApi = {
   deleteDeliverable: (id, deliverableId) => api.delete(`/collaborations/${id}/deliverables/${deliverableId}`),
   submitDeliverable: (id, deliverableId, submissionUrl) => api.put(`/collaborations/${id}/deliverables/${deliverableId}/submission`, { submissionUrl }),
   reviewDeliverable: (id, deliverableId, status, feedback) => api.put(`/collaborations/${id}/deliverables/${deliverableId}/review`, { status, feedback }),
+
+  // Messaging
+  getConversation: (id) => api.get(`/collaborations/${id}/conversation`),
+  getMessages: (id, page = 0, size = 50) => api.get(`/collaborations/${id}/messages?page=${page}&size=${size}`),
+  sendMessage: (id, content) => api.post(`/collaborations/${id}/messages`, { content }),
+  markMessagesAsRead: (id) => api.put(`/collaborations/${id}/messages/read`, {}),
 };

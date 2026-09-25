@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { collaborationApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import DeliverablesSection from '../components/DeliverablesSection';
+import MessagingSection from '../components/collaboration/MessagingSection';
 
 export default function CollaborationDetailPage() {
   const { id } = useParams();
@@ -156,6 +157,14 @@ export default function CollaborationDetailPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      <div style={{ marginTop: '2rem' }}>
+        <MessagingSection 
+          collaborationId={collaboration.id}
+          collaborationStatus={collaboration.status}
+          otherParticipantName={isBrandOwner ? collaboration.creatorName : collaboration.brandName}
+        />
       </div>
 
       <DeliverablesSection 
