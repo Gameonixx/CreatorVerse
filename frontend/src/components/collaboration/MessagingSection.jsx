@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { collaborationApi } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
+import '../../styles/messaging.css';
 
 export default function MessagingSection({ collaborationId, collaborationStatus, otherParticipantName }) {
   const { user } = useAuth();
@@ -10,8 +11,9 @@ export default function MessagingSection({ collaborationId, collaborationStatus,
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
-  const messagesEndRef = useRef(null);
-
+  const scrollContainerRef = useRef(null);
+  const isNearBottomRef = useRef(true);
+  const isFirstLoadRef = useRef(true);
   const fetchMessages = async () => {
     try {
       const convRes = await collaborationApi.getConversation(collaborationId);
@@ -38,8 +40,27 @@ export default function MessagingSection({ collaborationId, collaborationStatus,
   }, [collaborationId]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (isFirstLoadRef.current && messages.length > 0) {
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+      }
+      isFirstLoadRef.current = false;
+    } else if (isNearBottomRef.current) {
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTo({
+          top: scrollContainerRef.current.scrollHeight,
+          behavior: 'smooth'
+        });
+      }
+    }
   }, [messages]);
+
+  const handleScroll = () => {
+    if (scrollContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+      isNearBottomRef.current = scrollHeight - scrollTop - clientHeight < 100;
+    }
+  };
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -50,7 +71,14 @@ export default function MessagingSection({ collaborationId, collaborationStatus,
       const sentMessage = await collaborationApi.sendMessage(collaborationId, newMessage);
       setMessages(prev => [...prev, sentMessage]);
       setNewMessage('');
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      setTimeout(() => {
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTo({
+            top: scrollContainerRef.current.scrollHeight,
+            behavior: 'smooth'
+          });
+        }
+      }, 0);
     } catch (err) {
       alert(err.message || 'Failed to send message');
     } finally {
@@ -63,12 +91,19 @@ export default function MessagingSection({ collaborationId, collaborationStatus,
   }
 
   return (
-    <div className="card" style={{ display: 'flex', flexDirection: 'column', height: '600px', maxHeight: '70vh' }}>
-      <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h3 style={{ margin: 0 }}>Conversation with {otherParticipantName}</h3>
+    <div className="messaging-viewport-wrapper">
+      <div className="messaging-viewport-container">
+        <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid var(--color-border)', display: 'flex', alignItems: 'center' }}>
+        <h3 style={{ margin: 0, fontSize: 'clamp(1.1rem, 4vw, 1.25rem)', lineHeight: '1.4', overflowWrap: 'break-word', wordBreak: 'break-word' }}>
+          Conversation with {otherParticipantName}
+        </h3>
       </div>
       
-      <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', background: '#fafafa' }}>
+      <div 
+        ref={scrollContainerRef}
+        onScroll={handleScroll}
+        className="messaging-history-area"
+      >
         {messages.length === 0 ? (
           <div style={{ margin: 'auto', color: 'var(--text-secondary)', textAlign: 'center' }}>
             No messages yet. Start the conversation!
@@ -83,12 +118,12 @@ export default function MessagingSection({ collaborationId, collaborationStatus,
                     <img 
                       src={msg.senderAvatarUrl || `https://ui-avatars.com/api/?name=${msg.senderName}&background=random`} 
                       alt={msg.senderName}
-                      style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }}
+                      style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
                     />
                   )}
                   <div style={{
                     background: isMe ? 'var(--color-primary)' : 'white',
-                    color: isMe ? 'white' : 'var(--text-primary)',
+                    color: 'var(--text-primary)',
                     padding: '0.75rem 1rem',
                     borderRadius: '12px',
                     borderBottomRightRadius: isMe ? '4px' : '12px',
@@ -109,17 +144,16 @@ export default function MessagingSection({ collaborationId, collaborationStatus,
             );
           })
         )}
-        <div ref={messagesEndRef} />
       </div>
 
       {collaborationStatus === 'ACTIVE' ? (
-        <form onSubmit={handleSendMessage} style={{ padding: '1rem 1.5rem', borderTop: '1px solid var(--color-border)', display: 'flex', gap: '0.5rem', background: 'white' }}>
+        <form onSubmit={handleSendMessage} style={{ padding: 'clamp(0.75rem, 3vw, 1rem) clamp(1rem, 4vw, 1.5rem)', borderTop: '1px solid var(--color-border)', display: 'flex', gap: '0.5rem', alignItems: 'center', background: 'white' }}>
           <input
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Write a message..."
-            style={{ flex: 1, padding: '0.75rem 1rem', borderRadius: '24px', border: '1px solid var(--color-border)', outline: 'none', fontSize: '1rem' }}
+            style={{ flex: 1, minWidth: 0, padding: 'clamp(0.5rem, 2vw, 0.75rem) clamp(0.75rem, 3vw, 1rem)', borderRadius: '24px', border: '1px solid var(--color-border)', outline: 'none', fontSize: 'clamp(0.9rem, 3vw, 1rem)', boxSizing: 'border-box' }}
             disabled={sending}
             maxLength={5000}
           />
@@ -127,16 +161,17 @@ export default function MessagingSection({ collaborationId, collaborationStatus,
             type="submit" 
             className="btn primary" 
             disabled={!newMessage.trim() || sending}
-            style={{ borderRadius: '24px', padding: '0.5rem 1.25rem' }}
+            style={{ borderRadius: '24px', padding: 'clamp(0.5rem, 2vw, 0.75rem) clamp(1rem, 3vw, 1.25rem)', flexShrink: 0, whiteSpace: 'nowrap' }}
           >
             {sending ? 'Sending...' : 'Send'}
           </button>
         </form>
       ) : (
-        <div style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-secondary)', background: 'var(--color-bg)', borderTop: '1px solid var(--color-border)' }}>
-          This collaboration is {collaborationStatus.toLowerCase()}. You can no longer send messages.
-        </div>
-      )}
+          <div style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-secondary)', background: 'var(--color-bg)', borderTop: '1px solid var(--color-border)' }}>
+            This collaboration is {collaborationStatus.toLowerCase()}. You can no longer send messages.
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -103,15 +103,14 @@ export default function DeliverablesSection({ collaborationId, collaborationStat
   };
 
   return (
-    <div className="card" style={{ marginTop: '2rem', padding: 'clamp(1rem, 4vw, 2rem)' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--color-border)', paddingBottom: '0.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <h3 style={{ margin: 0 }}>Deliverables</h3>
-        {isBrand && isActive && !showAddForm && (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      {isBrand && isActive && !showAddForm && (
+        <div style={{ marginBottom: '1.5rem' }}>
           <button className="btn primary" onClick={() => { setShowAddForm(true); setEditId(null); setFormData({ title: '', description: '' }); }}>
             + Add Deliverable
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {!isActive && deliverables.length > 0 && (
         <div style={{ marginBottom: '1.5rem', padding: '1rem', background: '#f5f5f5', borderRadius: '4px', fontSize: '0.9rem', color: '#616161' }}>

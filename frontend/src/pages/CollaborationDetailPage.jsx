@@ -12,6 +12,7 @@ export default function CollaborationDetailPage() {
   const [collaboration, setCollaboration] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [expandedSection, setExpandedSection] = useState('campaign');
 
   useEffect(() => {
     fetchCollaboration();
@@ -95,83 +96,148 @@ export default function CollaborationDetailPage() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 350px), 1fr))', gap: '2rem' }}>
-        {/* Campaign Terms */}
-        <div className="card" style={{ padding: 'clamp(1rem, 4vw, 2rem)', display: 'flex', flexDirection: 'column' }}>
-          <h3 style={{ marginTop: 0, marginBottom: '1.5rem', borderBottom: '1px solid var(--color-border)', paddingBottom: '0.5rem' }}>Campaign Details</h3>
-          <h4 style={{ margin: '0 0 0.5rem 0', overflowWrap: 'break-word', wordWrap: 'break-word' }}>
-            <Link to={`/campaigns/${collaboration.campaignId}`} style={{ color: 'inherit' }}>
-              {collaboration.campaignTitle}
-            </Link>
-          </h4>
-          <p style={{ color: 'var(--text-secondary)', whiteSpace: 'pre-wrap', marginBottom: '1.5rem', fontSize: '0.95rem', overflowWrap: 'break-word', wordWrap: 'break-word', flexGrow: 1 }}>
-            {collaboration.campaignDescription}
-          </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '1rem', marginTop: 'auto' }}>
-            <div style={{ background: 'var(--color-bg)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.25rem' }}>Budget</div>
-              <div style={{ fontWeight: 'bold', fontSize: '1.1rem', overflowWrap: 'break-word' }}>${collaboration.campaignBudget}</div>
-            </div>
-            <div style={{ background: 'var(--color-bg)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.25rem' }}>Niche</div>
-              <div style={{ fontWeight: 'bold', fontSize: '1.1rem', overflowWrap: 'break-word' }}>{collaboration.campaignNiche}</div>
-            </div>
-          </div>
-        </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        
+        {/* Campaign Details Accordion */}
+        <div className="card" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <button 
+            onClick={() => setExpandedSection(prev => prev === 'campaign' ? null : 'campaign')}
+            style={{ 
+              width: '100%', padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
+              background: expandedSection === 'campaign' ? 'var(--color-accent)' : 'var(--color-surface)', 
+              border: 'none', cursor: 'pointer', textAlign: 'left',
+              borderBottom: expandedSection === 'campaign' ? '2px solid var(--color-border)' : 'none',
+              fontFamily: 'var(--font-heading)', color: 'var(--color-text-primary)'
+            }}
+            aria-expanded={expandedSection === 'campaign'}
+          >
+            <h3 style={{ margin: 0, fontSize: '1.25rem' }}>Campaign Details</h3>
+            <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{expandedSection === 'campaign' ? '−' : '+'}</span>
+          </button>
+          
+          {expandedSection === 'campaign' && (
+            <div style={{ padding: 'clamp(1rem, 4vw, 2rem)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 350px), 1fr))', gap: '2rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <h4 style={{ margin: '0 0 0.5rem 0', overflowWrap: 'break-word', wordWrap: 'break-word' }}>
+                    <Link to={`/campaigns/${collaboration.campaignId}`} style={{ color: 'inherit' }}>
+                      {collaboration.campaignTitle}
+                    </Link>
+                  </h4>
+                  <p style={{ color: 'var(--text-secondary)', whiteSpace: 'pre-wrap', marginBottom: '1.5rem', fontSize: '0.95rem', overflowWrap: 'break-word', wordWrap: 'break-word', flexGrow: 1 }}>
+                    {collaboration.campaignDescription}
+                  </p>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '1rem', marginTop: 'auto' }}>
+                    <div style={{ background: 'var(--color-bg)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.25rem' }}>Budget</div>
+                      <div style={{ fontWeight: 'bold', fontSize: '1.1rem', overflowWrap: 'break-word' }}>${collaboration.campaignBudget}</div>
+                    </div>
+                    <div style={{ background: 'var(--color-bg)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.25rem' }}>Niche</div>
+                      <div style={{ fontWeight: 'bold', fontSize: '1.1rem', overflowWrap: 'break-word' }}>{collaboration.campaignNiche}</div>
+                    </div>
+                  </div>
+                </div>
 
-        {/* Participants */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div className="card" style={{ padding: 'clamp(1rem, 4vw, 2rem)' }}>
-            <h3 style={{ marginTop: 0, marginBottom: '1.5rem', borderBottom: '1px solid var(--color-border)', paddingBottom: '0.5rem' }}>Brand Partner</h3>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <img 
-                src={collaboration.brandLogoUrl || `https://ui-avatars.com/api/?name=${collaboration.brandName}&background=random`} 
-                alt={collaboration.brandName} 
-                style={{ width: '56px', height: '56px', borderRadius: '8px', objectFit: 'cover', border: '1px solid var(--color-border)' }}
-              />
-              <div style={{ minWidth: 0, flex: 1 }}>
-                <div style={{ fontWeight: 'bold', fontSize: '1.1rem', overflowWrap: 'break-word', wordWrap: 'break-word' }}>
-                  <Link to={`/user/${collaboration.brandUserId}`} style={{ color: 'inherit', textDecoration: 'none' }}>
-                    {collaboration.brandName}
-                  </Link>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                  <div>
+                    <h4 style={{ margin: '0 0 1rem 0' }}>Brand Partner</h4>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                      <img 
+                        src={collaboration.brandLogoUrl || `https://ui-avatars.com/api/?name=${collaboration.brandName}&background=random`} 
+                        alt={collaboration.brandName} 
+                        style={{ width: '56px', height: '56px', borderRadius: '8px', objectFit: 'cover', border: '1px solid var(--color-border)' }}
+                      />
+                      <div style={{ minWidth: 0, flex: 1 }}>
+                        <div style={{ fontWeight: 'bold', fontSize: '1.1rem', overflowWrap: 'break-word', wordWrap: 'break-word' }}>
+                          <Link to={`/user/${collaboration.brandUserId}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+                            {collaboration.brandName}
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 style={{ margin: '0 0 1rem 0', borderTop: '1px solid var(--color-border)', paddingTop: '1rem' }}>Creator Partner</h4>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                      <img 
+                        src={collaboration.creatorAvatarUrl || `https://ui-avatars.com/api/?name=${collaboration.creatorName}&background=random`} 
+                        alt={collaboration.creatorName} 
+                        style={{ width: '56px', height: '56px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--color-border)' }}
+                      />
+                      <div style={{ minWidth: 0, flex: 1 }}>
+                        <div style={{ fontWeight: 'bold', fontSize: '1.1rem', overflowWrap: 'break-word', wordWrap: 'break-word' }}>
+                          <Link to={`/user/${collaboration.creatorUserId}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+                            {collaboration.creatorName}
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-
-          <div className="card" style={{ padding: 'clamp(1rem, 4vw, 2rem)' }}>
-            <h3 style={{ marginTop: 0, marginBottom: '1.5rem', borderBottom: '1px solid var(--color-border)', paddingBottom: '0.5rem' }}>Creator Partner</h3>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <img 
-                src={collaboration.creatorAvatarUrl || `https://ui-avatars.com/api/?name=${collaboration.creatorName}&background=random`} 
-                alt={collaboration.creatorName} 
-                style={{ width: '56px', height: '56px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--color-border)' }}
-              />
-              <div style={{ minWidth: 0, flex: 1 }}>
-                <div style={{ fontWeight: 'bold', fontSize: '1.1rem', overflowWrap: 'break-word', wordWrap: 'break-word' }}>
-                  <Link to={`/user/${collaboration.creatorUserId}`} style={{ color: 'inherit', textDecoration: 'none' }}>
-                    {collaboration.creatorName}
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
-      </div>
 
-      <div style={{ marginTop: '2rem' }}>
-        <MessagingSection 
-          collaborationId={collaboration.id}
-          collaborationStatus={collaboration.status}
-          otherParticipantName={isBrandOwner ? collaboration.creatorName : collaboration.brandName}
-        />
-      </div>
+        {/* Messages Accordion */}
+        <div className="card" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <button 
+            onClick={() => setExpandedSection(prev => prev === 'messages' ? null : 'messages')}
+            style={{ 
+              width: '100%', padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
+              background: expandedSection === 'messages' ? 'var(--color-accent)' : 'var(--color-surface)', 
+              border: 'none', cursor: 'pointer', textAlign: 'left',
+              borderBottom: expandedSection === 'messages' ? '2px solid var(--color-border)' : 'none',
+              fontFamily: 'var(--font-heading)', color: 'var(--color-text-primary)'
+            }}
+            aria-expanded={expandedSection === 'messages'}
+          >
+            <h3 style={{ margin: 0, fontSize: '1.25rem' }}>Messages</h3>
+            <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{expandedSection === 'messages' ? '−' : '+'}</span>
+          </button>
+          
+          {expandedSection === 'messages' && (
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <MessagingSection 
+                collaborationId={collaboration.id}
+                collaborationStatus={collaboration.status}
+                otherParticipantName={isBrandOwner ? collaboration.creatorName : collaboration.brandName}
+              />
+            </div>
+          )}
+        </div>
 
-      <DeliverablesSection 
-        collaborationId={collaboration.id}
-        collaborationStatus={collaboration.status}
-        currentUserRole={isBrandOwner ? 'BRAND' : isCreator ? 'CREATOR' : null}
-      />
+        {/* Deliverables Accordion */}
+        <div className="card" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <button 
+            onClick={() => setExpandedSection(prev => prev === 'deliverables' ? null : 'deliverables')}
+            style={{ 
+              width: '100%', padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
+              background: expandedSection === 'deliverables' ? 'var(--color-accent)' : 'var(--color-surface)', 
+              border: 'none', cursor: 'pointer', textAlign: 'left',
+              borderBottom: expandedSection === 'deliverables' ? '2px solid var(--color-border)' : 'none',
+              fontFamily: 'var(--font-heading)', color: 'var(--color-text-primary)'
+            }}
+            aria-expanded={expandedSection === 'deliverables'}
+          >
+            <h3 style={{ margin: 0, fontSize: '1.25rem' }}>Deliverables</h3>
+            <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{expandedSection === 'deliverables' ? '−' : '+'}</span>
+          </button>
+          
+          {expandedSection === 'deliverables' && (
+            <div style={{ padding: 'clamp(1rem, 4vw, 2rem)' }}>
+              <DeliverablesSection 
+                collaborationId={collaboration.id}
+                collaborationStatus={collaboration.status}
+                currentUserRole={isBrandOwner ? 'BRAND' : isCreator ? 'CREATOR' : null}
+              />
+            </div>
+          )}
+        </div>
+
+      </div>
     </div>
   );
 }
