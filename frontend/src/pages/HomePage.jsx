@@ -65,7 +65,7 @@ export default function HomePage() {
         ) : content.length > 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
             {content.map(item => (
-              <ContentCard key={item.id} content={item} />
+              <ContentCard key={item.id} content={item} onDelete={(id) => setContent(prev => prev.filter(c => c.id !== id))} />
             ))}
           </div>
         ) : (

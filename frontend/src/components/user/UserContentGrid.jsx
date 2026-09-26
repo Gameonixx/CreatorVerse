@@ -86,7 +86,7 @@ export default function UserContentGrid({ userId, onDisplayNameDiscovered }) {
       
       <div className="creator-content-grid">
         {content.map(item => (
-          <ContentCard key={item.id} content={item} />
+          <ContentCard key={item.id} content={item} onDelete={(id) => setContent(prev => prev.filter(c => c.id !== id))} />
         ))}
       </div>
 

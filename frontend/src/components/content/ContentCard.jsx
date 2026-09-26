@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import LikeButton from '../social/LikeButton';
 import CommentSection from '../social/CommentSection';
+import { useAuth } from '../../context/AuthContext';
+import { api } from '../../services/api';
 
-export default function ContentCard({ content }) {
+export default function ContentCard({ content, onDelete }) {
   const {
     id,
     creatorId,
@@ -21,6 +23,8 @@ export default function ContentCard({ content }) {
 
   const [showComments, setShowComments] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const { user } = useAuth();
+  const isOwner = user && user.id === creatorId;
 
   // Format date
   const publishDate = publishedAt ? new Date(publishedAt).toLocaleDateString(undefined, {
@@ -157,6 +161,24 @@ export default function ContentCard({ content }) {
               >
                 Copy Link
               </button>
+              {isOwner && (
+                <button
+                  onClick={async () => {
+                    if (window.confirm('Delete post?\n\nThis action cannot be undone.')) {
+                      try {
+                        await api.delete(`/content/${id}`);
+                        if (onDelete) onDelete(id);
+                      } catch (err) {
+                        alert('Failed to delete content');
+                      }
+                    }
+                    setShowMenu(false);
+                  }}
+                  style={{ background: 'none', border: 'none', padding: '0.5rem 1rem', textAlign: 'left', cursor: 'pointer', color: '#ff4444', fontSize: '0.9rem', fontWeight: 600, width: '100%', boxShadow: 'none' }}
+                >
+                  Delete
+                </button>
+              )}
             </div>
           )}
         </div>
