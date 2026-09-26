@@ -1,4 +1,7 @@
 # Backend
+backend/.env
+backend/.env.*
+!backend/.env.example
 backend/target/
 backend/target/
 !.mvn/wrapper/maven-wrapper.jar
