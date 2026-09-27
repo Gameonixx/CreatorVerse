@@ -10,7 +10,25 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
 
-  // Hydrate user from /me endpoint, falling back to local storage
+  const performLocalLogout = () => {
+    setToken(null);
+    setUser(null);
+    setHasCreatorMode(false);
+    setHasBrandMode(false);
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+  };
+
+  useEffect(() => {
+    const handleAuthInvalidated = () => {
+      performLocalLogout();
+    };
+    window.addEventListener('auth:invalidated', handleAuthInvalidated);
+    return () => window.removeEventListener('auth:invalidated', handleAuthInvalidated);
+  }, []);
+
+  // Hydrate user from /me endpoint
   useEffect(() => {
     const fetchMe = async () => {
       try {
@@ -20,12 +38,10 @@ export const AuthProvider = ({ children }) => {
         await checkProfileModes(response.id);
       } catch (err) {
         console.error("Failed to fetch user profile", err);
-        const savedUser = localStorage.getItem('user');
-        if (savedUser) {
-          const parsedUser = JSON.parse(savedUser);
-          setUser(parsedUser);
-          await checkProfileModes(parsedUser.id);
-        }
+        // Do not resurrect cached user on failure.
+        // The api.js interceptor might have already cleared storage and fired auth:invalidated,
+        // but we ensure local state is cleared here too if it failed unrecoverably.
+        performLocalLogout();
       } finally {
         setLoading(false);
       }
@@ -44,6 +60,9 @@ export const AuthProvider = ({ children }) => {
       if (response.accessToken) {
         setToken(response.accessToken);
         localStorage.setItem('token', response.accessToken);
+        if (response.refreshToken) {
+          localStorage.setItem('refreshToken', response.refreshToken);
+        }
         // Temporarily, we extract the username from credentials to set simple user obj
         // In the future, this would come from the JWT claims or a /me endpoint.
         const userObj = {
@@ -70,13 +89,16 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    setToken(null);
-    setUser(null);
-    setHasCreatorMode(false);
-    setHasBrandMode(false);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+  const logout = async () => {
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (refreshToken) {
+      try {
+        await api.post('/auth/logout', { refreshToken });
+      } catch (err) {
+        console.error('Backend logout failed', err);
+      }
+    }
+    performLocalLogout();
   };
 
   const checkProfileModes = async (userId) => {

@@ -1,6 +1,31 @@
 const getAuthToken = () => localStorage.getItem('token');
 
-const request = async (endpoint, options = {}) => {
+let refreshPromise = null;
+
+const refreshTokenFlow = async () => {
+  const refreshToken = localStorage.getItem('refreshToken');
+  if (!refreshToken) {
+    throw new Error('No refresh token available');
+  }
+
+  const baseUrl = import.meta.env.VITE_API_URL || '/api';
+  const response = await fetch(`${baseUrl}/auth/refresh`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refreshToken })
+  });
+
+  if (!response.ok) {
+    throw new Error('Refresh failed');
+  }
+
+  const data = await response.json();
+  localStorage.setItem('token', data.accessToken);
+  localStorage.setItem('refreshToken', data.refreshToken);
+  return data.accessToken;
+};
+
+const request = async (endpoint, options = {}, isRetry = false) => {
   const token = getAuthToken();
   const headers = {
     ...options.headers,
@@ -19,10 +44,56 @@ const request = async (endpoint, options = {}) => {
   const baseUrl = import.meta.env.VITE_API_URL || '/api';
   const url = `${baseUrl}${endpoint}`;
 
-  const response = await fetch(url, {
+  let response = await fetch(url, {
     ...options,
     headers,
   });
+
+  if ((response.status === 401 || response.status === 403) && !isRetry) {
+    const hasRefreshToken = !!localStorage.getItem('refreshToken');
+    if (hasRefreshToken) {
+      let isAuthFailure = response.status === 401;
+
+      if (response.status === 403) {
+        if (token) {
+          try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            // Check if expired or within 10 seconds of expiring
+            if (Date.now() >= (payload.exp * 1000) - 10000) {
+              isAuthFailure = true;
+            }
+          } catch (e) {
+            isAuthFailure = true;
+          }
+        } else {
+          isAuthFailure = true;
+        }
+      }
+
+      if (isAuthFailure) {
+        if (!refreshPromise) {
+          refreshPromise = refreshTokenFlow().finally(() => {
+            refreshPromise = null;
+          });
+        }
+
+        try {
+          const newToken = await refreshPromise;
+          headers['Authorization'] = `Bearer ${newToken}`;
+          response = await fetch(url, { ...options, headers });
+        } catch (refreshErr) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('user');
+          window.dispatchEvent(new CustomEvent('auth:invalidated'));
+
+          const error = new Error('Session expired');
+          error.status = 401;
+          throw error;
+        }
+      }
+    }
+  }
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => null);
