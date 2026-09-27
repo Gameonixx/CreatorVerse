@@ -18,10 +18,16 @@ public interface ContentService {
     
     void deleteContent(Long contentId);
     
+    void deleteContentAsAdmin(Long contentId);
+
+    void deleteContentByMediaUrlAsAdmin(String mediaUrl);
+
     ContentResponse getContent(Long contentId);
     
     List<ContentSummaryResponse> getMyContent();
     
+    List<ContentSummaryResponse> getMyContentForUser(Long userId);
+
     List<ContentSummaryResponse> getMyDrafts();
     
     List<ContentSummaryResponse> getMyPublished();

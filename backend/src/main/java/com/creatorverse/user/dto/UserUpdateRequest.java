@@ -12,6 +12,9 @@ public class UserUpdateRequest {
     @Size(max = 500, message = "Avatar URL cannot exceed 500 characters")
     private String avatarUrl;
 
+    @Size(max = 255, message = "Avatar Public ID cannot exceed 255 characters")
+    private String avatarPublicId;
+
     public String getDisplayName() { return displayName; }
     public void setDisplayName(String displayName) { this.displayName = displayName; }
 
@@ -20,4 +23,7 @@ public class UserUpdateRequest {
 
     public String getAvatarUrl() { return avatarUrl; }
     public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
+
+    public String getAvatarPublicId() { return avatarPublicId; }
+    public void setAvatarPublicId(String avatarPublicId) { this.avatarPublicId = avatarPublicId; }
 }

@@ -13,6 +13,7 @@ import com.creatorverse.content.entity.enums.ContentVisibility;
 
 @Repository
 public interface ContentRepository extends JpaRepository<Content, Long> {
+    java.util.Optional<Content> findByMediaUrl(String mediaUrl);
     List<Content> findByCreatorId(Long creatorId);
     List<Content> findByCreatorIdAndStatus(Long creatorId, ContentStatus status);
     Page<Content> findByStatusAndVisibility(ContentStatus status, ContentVisibility visibility, Pageable pageable);

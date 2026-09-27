@@ -38,6 +38,9 @@ public class Content {
     @Column(length = 1024)
     private String thumbnailUrl;
 
+    @Column(length = 255)
+    private String cloudinaryPublicId;
+
     private Integer durationSeconds;
 
     private Long fileSize;
@@ -84,6 +87,9 @@ public class Content {
 
     public String getThumbnailUrl() { return thumbnailUrl; }
     public void setThumbnailUrl(String thumbnailUrl) { this.thumbnailUrl = thumbnailUrl; }
+
+    public String getCloudinaryPublicId() { return cloudinaryPublicId; }
+    public void setCloudinaryPublicId(String cloudinaryPublicId) { this.cloudinaryPublicId = cloudinaryPublicId; }
 
     public Integer getDurationSeconds() { return durationSeconds; }
     public void setDurationSeconds(Integer durationSeconds) { this.durationSeconds = durationSeconds; }

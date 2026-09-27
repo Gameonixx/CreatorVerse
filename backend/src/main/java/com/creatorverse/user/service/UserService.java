@@ -22,10 +22,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
+    private final com.creatorverse.content.service.ContentService contentService;
 
-    public UserService(UserRepository userRepository, FollowRepository followRepository) {
+    public UserService(UserRepository userRepository, FollowRepository followRepository, @org.springframework.context.annotation.Lazy com.creatorverse.content.service.ContentService contentService) {
         this.userRepository = userRepository;
         this.followRepository = followRepository;
+        this.contentService = contentService;
     }
 
     @Transactional
@@ -84,7 +86,14 @@ public class UserService {
             user.setBio(request.getBio());
         }
         if (request.getAvatarUrl() != null) {
+            // If the avatar is changing, delete the old avatar content if it exists
+            if (user.getAvatarUrl() != null && !user.getAvatarUrl().equals(request.getAvatarUrl())) {
+                contentService.deleteContentByMediaUrlAsAdmin(user.getAvatarUrl());
+            }
             user.setAvatarUrl(request.getAvatarUrl());
+            if (request.getAvatarPublicId() != null) {
+                user.setAvatarPublicId(request.getAvatarPublicId());
+            }
         }
 
         user = userRepository.save(user);
@@ -102,6 +111,15 @@ public class UserService {
         if (!userRepository.existsById(id)) {
             throw new ResourceNotFoundException("User not found with id: " + id);
         }
+
+        // Handle explicit application-level deletions for Cloudinary lifecycle
+        List<com.creatorverse.content.dto.ContentSummaryResponse> userContent = contentService.getMyContentForUser(id);
+        if (userContent != null) {
+            for (com.creatorverse.content.dto.ContentSummaryResponse content : userContent) {
+                contentService.deleteContentAsAdmin(content.getId());
+            }
+        }
+
         userRepository.deleteById(id);
     }
 

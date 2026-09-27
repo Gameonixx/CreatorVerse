@@ -69,6 +69,7 @@ public class ContentServiceImpl implements ContentService {
         content.setVisibility(request.getVisibility());
         
         content.setMediaUrl(mediaUrl);
+        content.setCloudinaryPublicId((String) uploadResult.get("public_id"));
         content.setMimeType(file.getContentType());
         content.setFileSize(bytes);
         content.setDurationSeconds(duration);
@@ -121,9 +122,74 @@ public class ContentServiceImpl implements ContentService {
     @Transactional
     public void deleteContent(Long contentId) {
         Content content = getMyContentEntity(contentId);
+        String publicId = content.getCloudinaryPublicId();
         contentRepository.delete(content);
-        // Note: We might also want to delete from Cloudinary here, but we don't store the exact public_id separately currently.
-        // For Phase 3, deleting the metadata is sufficient, or we can extract public_id from URL.
+        if (publicId != null) {
+            org.springframework.transaction.support.TransactionSynchronizationManager.registerSynchronization(
+                new org.springframework.transaction.support.TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        try {
+                            mediaStorageService.deleteFile(publicId);
+                        } catch (Exception e) {
+                            System.err.println("Failed to delete Cloudinary asset: " + e.getMessage());
+                        }
+                    }
+                }
+            );
+        }
+    }
+
+    @Override
+    public List<ContentSummaryResponse> getMyContentForUser(Long userId) {
+        return contentMapper.toSummaryResponseList(contentRepository.findByCreatorId(userId));
+    }
+
+    @Override
+    @Transactional
+    public void deleteContentAsAdmin(Long contentId) {
+        Content content = contentRepository.findById(contentId).orElse(null);
+        if (content != null) {
+            String publicId = content.getCloudinaryPublicId();
+            contentRepository.delete(content);
+            if (publicId != null) {
+                org.springframework.transaction.support.TransactionSynchronizationManager.registerSynchronization(
+                    new org.springframework.transaction.support.TransactionSynchronization() {
+                        @Override
+                        public void afterCommit() {
+                            try {
+                                mediaStorageService.deleteFile(publicId);
+                            } catch (Exception e) {
+                                System.err.println("Failed to delete Cloudinary asset: " + e.getMessage());
+                            }
+                        }
+                    }
+                );
+            }
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteContentByMediaUrlAsAdmin(String mediaUrl) {
+        contentRepository.findByMediaUrl(mediaUrl).ifPresent(content -> {
+            String publicId = content.getCloudinaryPublicId();
+            contentRepository.delete(content);
+            if (publicId != null) {
+                org.springframework.transaction.support.TransactionSynchronizationManager.registerSynchronization(
+                    new org.springframework.transaction.support.TransactionSynchronization() {
+                        @Override
+                        public void afterCommit() {
+                            try {
+                                mediaStorageService.deleteFile(publicId);
+                            } catch (Exception e) {
+                                System.err.println("Failed to delete Cloudinary asset: " + e.getMessage());
+                            }
+                        }
+                    }
+                );
+            }
+        });
     }
 
     @Override
