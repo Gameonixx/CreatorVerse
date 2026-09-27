@@ -16,8 +16,8 @@ public class CreatorAnalyticsScheduler {
         this.analyticsService = analyticsService;
     }
 
-    // Run every hour (3600000 milliseconds)
-    @Scheduled(fixedRate = 3600000)
+    // Run every hour (3600000 milliseconds) with 5 min initial delay
+    @Scheduled(initialDelay = 300000, fixedRate = 3600000)
     public void scheduleEngagementRateCalculation() {
         logger.info("Starting hourly creator engagement rate calculation...");
         long startTime = System.currentTimeMillis();
